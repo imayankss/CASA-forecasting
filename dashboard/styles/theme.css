@@ -1,0 +1,167 @@
+/* ──────────────────────────────────────────────────────────────
+   BOI CASA Forecasting — Bloomberg-inspired dark theme
+   ────────────────────────────────────────────────────────────── */
+
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── Global ─────────────────────────────────────────────────── */
+html, body, [class*="css"] {
+    font-family: 'Inter', -apple-system, sans-serif !important;
+    color: #E2E8F0 !important;
+}
+
+.stApp {
+    background: #080E1A !important;
+}
+
+/* ── Sidebar ────────────────────────────────────────────────── */
+[data-testid="stSidebar"] {
+    background: #0D1526 !important;
+    border-right: 1px solid #1E2D4A !important;
+}
+
+[data-testid="stSidebar"] .stSelectbox label,
+[data-testid="stSidebar"] .stRadio label,
+[data-testid="stSidebar"] p {
+    color: #94A3B8 !important;
+    font-size: 0.82rem !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+}
+
+/* ── Metric cards ───────────────────────────────────────────── */
+[data-testid="metric-container"] {
+    background: linear-gradient(145deg, #0F1D35, #142240) !important;
+    border: 1px solid #1E3A5F !important;
+    border-radius: 12px !important;
+    padding: 18px 20px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+[data-testid="metric-container"]:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 30px rgba(37, 99, 235, 0.2) !important;
+}
+
+[data-testid="metric-container"] label {
+    color: #64748B !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+}
+
+[data-testid="metric-container"] [data-testid="stMetricValue"] {
+    color: #F1F5F9 !important;
+    font-size: 1.7rem !important;
+    font-weight: 700 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+[data-testid="metric-container"] [data-testid="stMetricDelta"] {
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
+}
+
+/* ── Section headers ────────────────────────────────────────── */
+h1 { color: #F1F5F9 !important; font-weight: 700 !important; letter-spacing: -0.03em !important; }
+h2 { color: #E2E8F0 !important; font-weight: 600 !important; border-bottom: 1px solid #1E3A5F; padding-bottom: 8px; }
+h3 { color: #CBD5E1 !important; font-weight: 500 !important; }
+
+/* ── Tabs ───────────────────────────────────────────────────── */
+[data-testid="stTabs"] [data-baseweb="tab-list"] {
+    background: #0D1526 !important;
+    border-radius: 10px !important;
+    padding: 4px !important;
+    gap: 4px !important;
+}
+
+[data-testid="stTabs"] [data-baseweb="tab"] {
+    background: transparent !important;
+    color: #64748B !important;
+    font-size: 0.82rem !important;
+    font-weight: 500 !important;
+    border-radius: 8px !important;
+    padding: 8px 18px !important;
+    transition: all 0.2s ease !important;
+}
+
+[data-testid="stTabs"] [aria-selected="true"] {
+    background: #1E3A5F !important;
+    color: #60A5FA !important;
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+.stButton > button {
+    background: linear-gradient(135deg, #1D4ED8, #2563EB) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 10px 24px !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    letter-spacing: 0.02em !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.3) !important;
+}
+
+.stButton > button:hover {
+    background: linear-gradient(135deg, #1E40AF, #1D4ED8) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4) !important;
+}
+
+/* ── DataFrames ─────────────────────────────────────────────── */
+[data-testid="stDataFrame"] {
+    border: 1px solid #1E3A5F !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+}
+
+/* ── Sliders ────────────────────────────────────────────────── */
+[data-testid="stSlider"] [data-testid="stSliderThumbValue"] {
+    color: #60A5FA !important;
+}
+
+/* ── Alerts / info boxes ────────────────────────────────────── */
+[data-testid="stAlert"] {
+    border-radius: 10px !important;
+    border-left: 4px solid #2563EB !important;
+}
+
+/* ── Expanders ──────────────────────────────────────────────── */
+[data-testid="stExpander"] {
+    background: #0D1526 !important;
+    border: 1px solid #1E2D4A !important;
+    border-radius: 10px !important;
+}
+
+/* ── File uploader ──────────────────────────────────────────── */
+[data-testid="stFileUploader"] {
+    background: #0D1526 !important;
+    border: 2px dashed #1E3A5F !important;
+    border-radius: 12px !important;
+}
+
+/* ── Progress bar ───────────────────────────────────────────── */
+[data-testid="stProgress"] > div > div {
+    background: linear-gradient(90deg, #2563EB, #7C3AED) !important;
+}
+
+/* ── Badge pill ─────────────────────────────────────────────── */
+.badge-pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.badge-green  { background: rgba(16,185,129,0.15); color: #10B981; border: 1px solid #10B981; }
+.badge-blue   { background: rgba(37,99,235,0.15);  color: #60A5FA; border: 1px solid #2563EB; }
+.badge-amber  { background: rgba(245,158,11,0.15); color: #FBBF24; border: 1px solid #F59E0B; }
+.badge-red    { background: rgba(239,68,68,0.15);  color: #F87171; border: 1px solid #EF4444; }
+.badge-purple { background: rgba(124,58,237,0.15); color: #A78BFA; border: 1px solid #7C3AED; }
