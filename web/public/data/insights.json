@@ -1,0 +1,15 @@
+{
+  "executive_summary": "HoltWinters leads the exported leaderboard across 6 evaluated models with 1.52% MAPE.",
+  "best_model_reason": "The recommended model has the highest composite ranking in the exported leaderboard.",
+  "risk_interpretation": "Drift monitoring indicates elevated model risk. Retraining should be prioritized.",
+  "model_recommendations": [
+    "Use HoltWinters as the default planning view until fresh pipeline outputs change the leaderboard.",
+    "Review confidence scores by quarter before using forecasts for treasury decisions.",
+    "Regenerate web data after every pipeline run to keep dashboard claims aligned with artifacts."
+  ],
+  "banking_insights": [
+    "CASA deposits show quarterly movement, so model selection should account for both accuracy and stability.",
+    "Direction accuracy and confidence bands help distinguish useful forecasts from low-error but fragile fits.",
+    "Anomaly and drift checks make the project closer to a monitored production forecasting workflow."
+  ]
+}

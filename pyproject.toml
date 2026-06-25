@@ -1,0 +1,21 @@
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+include = "\\.pyi?$"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --tb=short"
+filterwarnings = [
+    "ignore::UserWarning",
+    "ignore::FutureWarning",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+

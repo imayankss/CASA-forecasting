@@ -2,121 +2,52 @@
   "ARIMA": {
     "name": "ARIMA",
     "params": {
-      "order": "(1,1,1)"
+      "order": "(1,1,0)"
     },
     "metrics": {
-      "MAE": 21128.4467,
-      "RMSE": 26426.0235,
-      "MSE": 698334718.5192,
-      "MAE_%": 3.27,
-      "RMSE_%": 4.09,
-      "MSE_%": 0.1673,
-      "MAPE": 3.255,
-      "SMAPE": 3.265,
-      "R2": -0.0043,
-      "Bias_%": -0.29,
+      "MAE": 20951.7513,
+      "RMSE": 26796.5989,
+      "MSE": 718057710.8137,
+      "MAE_%": 3.243,
+      "RMSE_%": 4.148,
+      "MSE_%": 0.172,
+      "MAPE": 3.214,
+      "SMAPE": 3.238,
+      "R2": -0.0326,
+      "Adjusted_R2": -0.2047,
+      "Direction_Accuracy": 71.43,
+      "Bias_%": -0.742,
       "Stability": 0.0,
-      "Theil_U": 0.8839
+      "Theil_U": 0.9041
     },
-    "train_time": 0.1601097583770752,
-    "timestamp": "2026-05-10T07:29:21.324404",
+    "train_time": 0.0068318843841552734,
+    "timestamp": "2026-06-25T19:14:40.051987",
     "tags": []
   },
   "SARIMA": {
     "name": "SARIMA",
     "params": {
       "order": "(1,1,1)",
-      "seasonal_order": "(1,1,1,4)"
+      "seasonal_order": "(0,1,1,4)"
     },
     "metrics": {
-      "MAE": 22543.5282,
-      "RMSE": 24589.7411,
-      "MSE": 604655365.1138,
-      "MAE_%": 3.489,
-      "RMSE_%": 3.806,
-      "MSE_%": 0.1449,
-      "MAPE": 3.481,
-      "SMAPE": 3.411,
-      "R2": 0.1305,
-      "Bias_%": 3.489,
+      "MAE": 24849.8293,
+      "RMSE": 27223.2625,
+      "MSE": 741106019.8331,
+      "MAE_%": 3.846,
+      "RMSE_%": 4.214,
+      "MSE_%": 0.1776,
+      "MAPE": 3.831,
+      "SMAPE": 3.746,
+      "R2": -0.0658,
+      "Adjusted_R2": -0.2434,
+      "Direction_Accuracy": 100.0,
+      "Bias_%": 3.846,
       "Stability": 0.0,
-      "Theil_U": 0.8197
+      "Theil_U": 0.9115
     },
-    "train_time": 0.24573111534118652,
-    "timestamp": "2026-05-10T07:29:21.571487",
-    "tags": []
-  },
-  "SARIMAX": {
-    "name": "SARIMAX",
-    "params": {
-      "order": "(1,1,1)",
-      "seasonal_order": "(1,1,1,4)",
-      "exog": "time_index"
-    },
-    "metrics": {
-      "MAE": 22532.572,
-      "RMSE": 24590.8111,
-      "MSE": 604707991.4154,
-      "MAE_%": 3.488,
-      "RMSE_%": 3.806,
-      "MSE_%": 0.1449,
-      "MAPE": 3.479,
-      "SMAPE": 3.409,
-      "R2": 0.1304,
-      "Bias_%": 3.488,
-      "Stability": 0.0,
-      "Theil_U": 0.8199
-    },
-    "train_time": 0.11703038215637207,
-    "timestamp": "2026-05-10T07:29:21.689706",
-    "tags": []
-  },
-  "AutoARIMA": {
-    "name": "AutoARIMA",
-    "params": {
-      "order": "(0, 0, 0)",
-      "seasonal_order": "(0, 1, 1, 4)"
-    },
-    "metrics": {
-      "MAE": 25560.7951,
-      "RMSE": 28102.4593,
-      "MSE": 789748217.0189,
-      "MAE_%": 3.956,
-      "RMSE_%": 4.35,
-      "MSE_%": 0.1892,
-      "MAPE": 3.941,
-      "SMAPE": 3.85,
-      "R2": -0.1357,
-      "Bias_%": 3.956,
-      "Stability": 0.0,
-      "Theil_U": 0.9429
-    },
-    "train_time": 2.1304550170898438,
-    "timestamp": "2026-05-10T07:29:23.821138",
-    "tags": []
-  },
-  "Prophet": {
-    "name": "Prophet",
-    "params": {
-      "seasonality_mode": "multiplicative",
-      "yearly_seasonality": true
-    },
-    "metrics": {
-      "MAE": 13054.6674,
-      "RMSE": 15695.9219,
-      "MSE": 246361964.7592,
-      "MAE_%": 2.021,
-      "RMSE_%": 2.43,
-      "MSE_%": 0.059,
-      "MAPE": 2.033,
-      "SMAPE": 2.004,
-      "R2": 0.6457,
-      "Bias_%": 1.883,
-      "Stability": 40.29,
-      "Theil_U": 0.53
-    },
-    "train_time": 0.3239784240722656,
-    "timestamp": "2026-05-10T07:29:24.146333",
+    "train_time": 0.07084798812866211,
+    "timestamp": "2026-06-25T19:14:40.123297",
     "tags": []
   }
 }

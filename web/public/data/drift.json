@@ -1,0 +1,10 @@
+{
+  "drift_detected": true,
+  "drift_type": "Mild",
+  "test_statistic": 0.9688,
+  "p_value": 0.0,
+  "cusum_signal": false,
+  "residual_drift": false,
+  "model_health_score": 75,
+  "interpretation": "Drift detected. Schedule retraining before using the forecast operationally."
+}

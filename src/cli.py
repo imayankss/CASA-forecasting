@@ -104,7 +104,7 @@ def build_parser(
 
     # ── Model arguments ───────────────────────────────────────────────────
     if include_models:
-        _KNOWN_MODELS = ["ARIMA", "SARIMA", "SARIMAX", "AutoARIMA", "Prophet"]
+        _KNOWN_MODELS = ["ARIMA", "SARIMA", "SARIMAX", "AutoARIMA", "HoltWinters", "Prophet"]
         model_grp = parser.add_argument_group("Models")
         model_grp.add_argument(
             "--models",
@@ -123,8 +123,8 @@ def build_parser(
             "--cv-splits",
             metavar="N",
             type=int,
-            default=3,
-            help="Number of CV folds (default: 3)",
+            default=5,
+            help="Number of CV folds (default: 5)",
         )
 
     # ── Output arguments ──────────────────────────────────────────────────

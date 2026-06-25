@@ -1,0 +1,48 @@
+{
+  "generated_at": "2026-06-25T13:44:48.525992+00:00",
+  "project_name": "CASA Intelligence Dashboard",
+  "data_start": "2015 Q1",
+  "data_end": "2024 Q4",
+  "row_count": 40,
+  "model_count": 6,
+  "best_model": "HoltWinters",
+  "best_mape": 1.518,
+  "best_r2": 0.8061,
+  "source_files": {
+    "deposits": {
+      "path": "data/raw/boi_casa_deposits.csv",
+      "exists": true,
+      "modified_at": "2026-05-10T01:18:56+00:00"
+    },
+    "leaderboard": {
+      "path": "data/processed/model_leaderboard.csv",
+      "exists": true,
+      "modified_at": "2026-06-24T14:52:06+00:00"
+    },
+    "metrics": {
+      "path": "data/processed/model_metrics.csv",
+      "exists": true,
+      "modified_at": "2026-06-24T14:52:06+00:00"
+    },
+    "forecast": {
+      "path": "data/processed/forecast_results.csv",
+      "exists": true,
+      "modified_at": "2026-06-24T14:52:06+00:00"
+    },
+    "cv_summary": {
+      "path": "data/processed/cv_summary.csv",
+      "exists": true,
+      "modified_at": "2026-06-24T14:52:06+00:00"
+    },
+    "confidence": {
+      "path": "data/processed/confidence_scores.csv",
+      "exists": true,
+      "modified_at": "2026-06-24T14:47:15+00:00"
+    },
+    "registry": {
+      "path": "reports/model_registry.json",
+      "exists": true,
+      "modified_at": "2026-06-25T13:44:40.248696+00:00"
+    }
+  }
+}

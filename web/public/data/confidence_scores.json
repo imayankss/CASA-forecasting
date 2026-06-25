@@ -1,0 +1,74 @@
+[
+  {
+    "period": "2023 Q1",
+    "forecast": 629584.0,
+    "lower_95": 611412.0,
+    "upper_95": 647756.0,
+    "confidence_score": 61.0,
+    "confidence_label": "Medium",
+    "drift_penalty": 15.0
+  },
+  {
+    "period": "2023 Q2",
+    "forecast": 616936.0,
+    "lower_95": 598764.0,
+    "upper_95": 635108.0,
+    "confidence_score": 57.7,
+    "confidence_label": "Medium",
+    "drift_penalty": 15.0
+  },
+  {
+    "period": "2023 Q3",
+    "forecast": 635014.0,
+    "lower_95": 616842.0,
+    "upper_95": 653186.0,
+    "confidence_score": 55.0,
+    "confidence_label": "Medium",
+    "drift_penalty": 15.0
+  },
+  {
+    "period": "2023 Q4",
+    "forecast": 658889.0,
+    "lower_95": 640717.0,
+    "upper_95": 677060.0,
+    "confidence_score": 52.7,
+    "confidence_label": "Medium",
+    "drift_penalty": 15.0
+  },
+  {
+    "period": "2024 Q1",
+    "forecast": 662373.0,
+    "lower_95": 644201.0,
+    "upper_95": 680545.0,
+    "confidence_score": 50.8,
+    "confidence_label": "Medium",
+    "drift_penalty": 15.0
+  },
+  {
+    "period": "2024 Q2",
+    "forecast": 649725.0,
+    "lower_95": 631553.0,
+    "upper_95": 667897.0,
+    "confidence_score": 49.2,
+    "confidence_label": "Medium",
+    "drift_penalty": 15.0
+  },
+  {
+    "period": "2024 Q3",
+    "forecast": 667803.0,
+    "lower_95": 649632.0,
+    "upper_95": 685975.0,
+    "confidence_score": 47.9,
+    "confidence_label": "Medium",
+    "drift_penalty": 15.0
+  },
+  {
+    "period": "2024 Q4",
+    "forecast": 691678.0,
+    "lower_95": 673506.0,
+    "upper_95": 709849.0,
+    "confidence_score": 46.8,
+    "confidence_label": "Medium",
+    "drift_penalty": 15.0
+  }
+]

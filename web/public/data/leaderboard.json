@@ -1,0 +1,104 @@
+[
+  {
+    "rank": 1,
+    "model": "HoltWinters",
+    "mape": 1.518,
+    "rmse_pct": 1.797,
+    "mae_pct": 1.496,
+    "r2": 0.8061,
+    "adjusted_r2": 0.7738,
+    "direction_accuracy": 100.0,
+    "stability": 37.92,
+    "composite_score": 98.82,
+    "train_time_s": 0.03,
+    "recommended": true,
+    "badges": [
+      "Production Candidate",
+      "Best Accuracy",
+      "Fastest"
+    ]
+  },
+  {
+    "rank": 2,
+    "model": "Prophet",
+    "mape": 2.033,
+    "rmse_pct": 2.43,
+    "mae_pct": 2.021,
+    "r2": 0.6457,
+    "adjusted_r2": 0.5866,
+    "direction_accuracy": 100.0,
+    "stability": 40.29,
+    "composite_score": 82.1,
+    "train_time_s": 0.46,
+    "recommended": false,
+    "badges": [
+      "Fastest"
+    ]
+  },
+  {
+    "rank": 3,
+    "model": "ARIMA",
+    "mape": 3.214,
+    "rmse_pct": 4.148,
+    "mae_pct": 3.243,
+    "r2": -0.0326,
+    "adjusted_r2": -0.2047,
+    "direction_accuracy": 71.43,
+    "stability": 0.0,
+    "composite_score": 18.31,
+    "train_time_s": 0.26,
+    "recommended": false,
+    "badges": [
+      "Fastest"
+    ]
+  },
+  {
+    "rank": 4,
+    "model": "SARIMAX",
+    "mape": 3.453,
+    "rmse_pct": 3.885,
+    "mae_pct": 3.471,
+    "r2": 0.094,
+    "adjusted_r2": -0.0569,
+    "direction_accuracy": 100.0,
+    "stability": 0.0,
+    "composite_score": 15.58,
+    "train_time_s": 0.07,
+    "recommended": false,
+    "badges": [
+      "Fastest"
+    ]
+  },
+  {
+    "rank": 5,
+    "model": "SARIMA",
+    "mape": 3.831,
+    "rmse_pct": 4.214,
+    "mae_pct": 3.846,
+    "r2": -0.0658,
+    "adjusted_r2": -0.2434,
+    "direction_accuracy": 100.0,
+    "stability": 0.0,
+    "composite_score": 3.85,
+    "train_time_s": 0.23,
+    "recommended": false,
+    "badges": [
+      "Fastest"
+    ]
+  },
+  {
+    "rank": 6,
+    "model": "AutoARIMA",
+    "mape": 3.942,
+    "rmse_pct": 4.351,
+    "mae_pct": 3.958,
+    "r2": -0.1363,
+    "adjusted_r2": -0.3257,
+    "direction_accuracy": 100.0,
+    "stability": 0.0,
+    "composite_score": 0.0,
+    "train_time_s": 1.46,
+    "recommended": false,
+    "badges": []
+  }
+]

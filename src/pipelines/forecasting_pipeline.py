@@ -31,7 +31,7 @@ from src.config import (
     DATA_FILE, FORECAST_HORIZON, TRAIN_FRACTION,
     PROCESSED_DATA_DIR, REPORTS_DIR
 )
-from src.data_loader import load_casa_data, get_train_test, get_train_test_with_exog
+from src.data_loader import load_casa_data, get_train_test, scale_exog_train_test
 from src.evaluation.metrics import compute_full_metrics
 from src.evaluation.diagnostics import run_full_diagnostics
 from src.evaluation.comparison import ModelComparison
@@ -109,28 +109,25 @@ def _fit_sarimax(train: pd.Series, test: pd.Series, df: Optional[pd.DataFrame] =
     Falls back to SARIMA (no exog) if macro data is unavailable.
     """
     import statsmodels.api as sm
-    from sklearn.preprocessing import StandardScaler
 
     train_log = np.log(train.replace(0, np.nan)).dropna()
 
     # ── Prepare real exogenous variables ──────────────────────────────────
     exog_train = None
     exog_test  = None
+    exog_feature_count = 0
 
     if df is not None:
-        avail = [c for c in SARIMAX_EXOG_COLS if c in df.columns]
-        if avail:
-            exog_full = df[avail].reindex(train.index.append(test.index))
-
-            # Use unscaled raw values — we scale ourselves
-            raw_train = exog_full.reindex(train.index).fillna(method="ffill").fillna(method="bfill")
-            raw_test  = exog_full.reindex(test.index).fillna(method="ffill").fillna(method="bfill")
-
-            if raw_train.notna().all().all() and raw_test.notna().all().all():
-                scaler = StandardScaler()
-                scaler.fit(raw_train)
-                exog_train = scaler.transform(raw_train)
-                exog_test  = scaler.transform(raw_test)
+        train_exog, test_exog, _ = scale_exog_train_test(
+            df=df,
+            train_index=train.index,
+            test_index=test.index,
+            exog_cols=SARIMAX_EXOG_COLS,
+        )
+        if not train_exog.empty and not test_exog.empty:
+            exog_feature_count = len(train_exog.columns)
+            exog_train = train_exog.values
+            exog_test = test_exog.values
 
     m = sm.tsa.SARIMAX(
         train_log,
@@ -155,7 +152,7 @@ def _fit_sarimax(train: pd.Series, test: pd.Series, df: Optional[pd.DataFrame] =
     exog_label = SARIMAX_EXOG_COLS if exog_train is not None else "none"
     return dict(
         forecast=fc, ci=ci_df, fitted=fitted, residuals=res,
-        metrics=compute_full_metrics(test.values, fc.values, res, n_features=len(SARIMAX_EXOG_COLS)),
+        metrics=compute_full_metrics(test.values, fc.values, res, n_features=exog_feature_count),
         params={"order": "(1,1,1)", "seasonal_order": "(0,1,1,4)", "exog": str(exog_label)},
     )
 
@@ -377,12 +374,13 @@ class ForecastingPipeline:
 
     def load(self) -> "ForecastingPipeline":
         logger.info(f"Loading data: {self.data_path}")
-        result = load_casa_data(self.data_path)
-        # load_casa_data returns (df, scaler) tuple
+        result = load_casa_data(self.data_path, fit_scaler=False, return_scaler=False)
+        # Keep compatibility with older loader returns while defaulting to raw features.
         if isinstance(result, tuple):
             self.df, self.scaler = result
         else:
             self.df = result
+            self.scaler = None
         self.train, self.test = get_train_test(self.df, train_frac=self.train_frac)
         logger.info(f"Train: {len(self.train)} | Test: {len(self.test)}")
         return self

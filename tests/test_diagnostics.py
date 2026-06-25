@@ -30,7 +30,8 @@ class TestADFTest:
         assert isinstance(result["stationary"], bool)
 
     def test_non_stationary_series(self):
-        rw = pd.Series(np.cumsum(np.random.randn(50)))
+        rng = np.random.default_rng(42)
+        rw = pd.Series(np.cumsum(rng.normal(0, 1, 80)))
         result = run_adf_test(rw)
         assert result["stationary"] is False
 
@@ -61,7 +62,8 @@ class TestJarqueBeraTest:
             assert k in result
 
     def test_normal_residuals_pass(self):
-        result = run_jarque_bera_test(np.random.normal(0, 1, 200))
+        rng = np.random.default_rng(123)
+        result = run_jarque_bera_test(rng.normal(0, 1, 200))
         assert result["normal"] is True
 
 

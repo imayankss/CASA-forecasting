@@ -1,0 +1,2 @@
+ks_statistic,ks_p_value,ks_drift,cusum_signal,cusum_max,residual_drift,residual_z,overall_drift,severity
+0.96875,2.340559616101412e-07,True,False,1.8684103063026472,False,0.4839,True,Mild

@@ -1,0 +1,56 @@
+[
+  {
+    "model": "ARIMA",
+    "cv_mape_mean": 6.097,
+    "cv_mape_std": 1.726,
+    "cv_rmse_mean": 6.981,
+    "cv_r2_mean": -6.7299,
+    "cv_direction_accuracy": 58.33,
+    "folds": 3
+  },
+  {
+    "model": "SARIMA",
+    "cv_mape_mean": 1.719,
+    "cv_mape_std": 0.309,
+    "cv_rmse_mean": 1.914,
+    "cv_r2_mean": 0.5038,
+    "cv_direction_accuracy": 100.0,
+    "folds": 3
+  },
+  {
+    "model": "SARIMAX",
+    "cv_mape_mean": 9.954,
+    "cv_mape_std": 7.022,
+    "cv_rmse_mean": 12.593,
+    "cv_r2_mean": -27.3898,
+    "cv_direction_accuracy": 83.33,
+    "folds": 3
+  },
+  {
+    "model": "AutoARIMA",
+    "cv_mape_mean": 1.976,
+    "cv_mape_std": 0.301,
+    "cv_rmse_mean": 2.471,
+    "cv_r2_mean": 0.0352,
+    "cv_direction_accuracy": 100.0,
+    "folds": 3
+  },
+  {
+    "model": "HoltWinters",
+    "cv_mape_mean": 1.945,
+    "cv_mape_std": 1.001,
+    "cv_rmse_mean": 2.408,
+    "cv_r2_mean": 0.4595,
+    "cv_direction_accuracy": 100.0,
+    "folds": 3
+  },
+  {
+    "model": "Prophet",
+    "cv_mape_mean": 2.433,
+    "cv_mape_std": 1.276,
+    "cv_rmse_mean": 2.982,
+    "cv_r2_mean": -0.0144,
+    "cv_direction_accuracy": 91.67,
+    "folds": 3
+  }
+]

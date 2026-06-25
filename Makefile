@@ -4,6 +4,7 @@
 # ──────────────────────────────────────────────────────────────────────────────
 
 .PHONY: install pipeline pipeline-fast pipeline-all visualize dashboard \
+        export-web web-install web-dev web-lint web-build \
         test test-fast test-advanced lint format clean report report-pdf \
         report-html report-md all help
 
@@ -68,6 +69,21 @@ dashboard:         ## Launch Bloomberg-style Streamlit dashboard (port 8501)
 	streamlit run dashboard/app.py \
 	  --server.port 8501 \
 	  --theme.base dark
+
+export-web:        ## Export static JSON files for the Next.js dashboard
+	$(PYTHON) scripts/export_web_data.py
+
+web-install:       ## Install Next.js dashboard dependencies
+	cd web && npm install
+
+web-dev:           ## Run the Next.js CASA Intelligence dashboard
+	cd web && npm run dev
+
+web-lint:          ## Lint the Next.js dashboard
+	cd web && npm run lint
+
+web-build:         ## Build the Next.js dashboard
+	cd web && npm run build
 
 # ── Reports ───────────────────────────────────────────────────────────────────
 report:            ## Generate PDF + HTML + Markdown reports

@@ -1,0 +1,12 @@
+{
+  "current_deposit": 695174.0,
+  "latest_period": "2024 Q4",
+  "forecast_next_period": 699086.4067,
+  "forecast_period": "2024 Q4",
+  "forecast_growth_pct": 0.56,
+  "best_model": "HoltWinters",
+  "best_mape": 1.518,
+  "confidence_score": 46.8,
+  "confidence_label": "Medium",
+  "risk_status": "Elevated"
+}

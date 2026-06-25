@@ -39,9 +39,9 @@ if css_path.exists():
 
 # ── Lazy imports (avoid import errors if libraries missing) ───────────────────
 from src.data_loader  import load_casa_data, get_train_test
-from src.evaluation.metrics import compute_full_metrics
 from src.evaluation.diagnostics import run_full_diagnostics, acf_pacf_values
 from src.evaluation.comparison import ModelComparison
+from src.pipelines.forecasting_pipeline import FITTERS
 from dashboard.components.charts import (
     trend_chart, forecast_vs_actual_chart, model_comparison_bar,
     radar_chart, residual_dashboard, seasonal_decomp_chart,
@@ -68,7 +68,7 @@ def _init_state():
         "horizon":      4,
         "train_frac":   0.80,
         "conf_level":   0.95,
-        "selected_models": ["ARIMA", "SARIMA", "SARIMAX", "AutoARIMA", "Prophet"],
+        "selected_models": ["ARIMA", "SARIMA", "SARIMAX", "AutoARIMA", "HoltWinters", "Prophet"],
         "page":         "🏠 Home",
     }
     for k, v in defaults.items():
@@ -191,99 +191,8 @@ def _set_dataset(df: pd.DataFrame):
     st.session_state.test  = test
 
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# MODEL FITTERS
-# ═══════════════════════════════════════════════════════════════════════════════
-
-def _fit_arima(train, test):
-    from statsmodels.tsa.arima.model import ARIMA
-    tl = np.log(train.replace(0, np.nan)).dropna()
-    m  = ARIMA(tl, order=(1, 1, 1)).fit()
-    fv  = np.exp(m.fittedvalues)
-    fc_obj = m.get_forecast(steps=len(test))
-    fc   = np.exp(fc_obj.predicted_mean); fc.index = test.index
-    ci   = fc_obj.conf_int()
-    ci_df = pd.DataFrame({"lower": np.exp(ci.iloc[:,0].values),
-                           "upper": np.exp(ci.iloc[:,1].values)}, index=test.index)
-    res  = (train - fv.reindex(train.index)).dropna().values
-    return dict(forecast=fc, ci=ci_df, fitted=fv, residuals=res,
-                metrics=compute_full_metrics(test.values, fc.values, res))
-
-
-def _fit_sarima(train, test):
-    import statsmodels.api as sm
-    tl = np.log(train.replace(0, np.nan)).dropna()
-    m  = sm.tsa.SARIMAX(tl, order=(1,1,1), seasonal_order=(1,1,1,4),
-                        enforce_stationarity=False, enforce_invertibility=False).fit(disp=False)
-    fv   = np.exp(m.fittedvalues)
-    fc_obj = m.get_forecast(steps=len(test))
-    fc   = np.exp(fc_obj.predicted_mean); fc.index = test.index
-    ci   = fc_obj.conf_int()
-    ci_df = pd.DataFrame({"lower": np.exp(ci.iloc[:,0].values),
-                           "upper": np.exp(ci.iloc[:,1].values)}, index=test.index)
-    res = (train - fv.reindex(train.index)).dropna().values
-    return dict(forecast=fc, ci=ci_df, fitted=fv, residuals=res,
-                metrics=compute_full_metrics(test.values, fc.values, res))
-
-
-def _fit_sarimax(train, test):
-    import statsmodels.api as sm
-    tl = np.log(train.replace(0, np.nan)).dropna()
-    et = np.arange(len(tl)).reshape(-1,1)
-    ef = np.arange(len(tl), len(tl)+len(test)).reshape(-1,1)
-    m  = sm.tsa.SARIMAX(tl, exog=et, order=(1,1,1), seasonal_order=(1,1,1,4),
-                        enforce_stationarity=False, enforce_invertibility=False).fit(disp=False)
-    fv   = np.exp(m.fittedvalues)
-    fc_obj = m.get_forecast(steps=len(test), exog=ef)
-    fc   = np.exp(fc_obj.predicted_mean); fc.index = test.index
-    ci   = fc_obj.conf_int()
-    ci_df = pd.DataFrame({"lower": np.exp(ci.iloc[:,0].values),
-                           "upper": np.exp(ci.iloc[:,1].values)}, index=test.index)
-    res = (train - fv.reindex(train.index)).dropna().values
-    return dict(forecast=fc, ci=ci_df, fitted=fv, residuals=res,
-                metrics=compute_full_metrics(test.values, fc.values, res))
-
-
-def _fit_auto_arima(train, test):
-    import pmdarima as pm
-    tl = np.log(train.replace(0, np.nan)).dropna()
-    mdl = pm.auto_arima(tl, seasonal=True, m=4, max_p=4, max_q=4,
-                        stepwise=True, trace=False,
-                        error_action="ignore", suppress_warnings=True)
-    fl  = mdl.predict_in_sample()
-    fv  = np.exp(pd.Series(fl, index=tl.index))
-    fcl, cil = mdl.predict(n_periods=len(test), return_conf_int=True)
-    fc   = pd.Series(np.exp(fcl), index=test.index, name="AutoARIMA")
-    ci_df = pd.DataFrame({"lower": np.exp(cil[:,0]), "upper": np.exp(cil[:,1])}, index=test.index)
-    res = (train - fv.reindex(train.index)).dropna().values
-    return dict(forecast=fc, ci=ci_df, fitted=fv, residuals=res,
-                metrics=compute_full_metrics(test.values, fc.values, res))
-
-
-def _fit_prophet(train, test):
-    from prophet import Prophet
-    td = train.reset_index(); td.columns = ["ds","y"]
-    m  = Prophet(seasonality_mode="multiplicative", yearly_seasonality=True)
-    m.fit(td)
-    fu = pd.DataFrame({"ds": test.index})
-    fd = m.predict(fu)
-    fc = pd.Series(fd["yhat"].values, index=test.index, name="Prophet")
-    ci_df = pd.DataFrame({"lower": fd["yhat_lower"].values,
-                           "upper": fd["yhat_upper"].values}, index=test.index)
-    tp = m.predict(td[["ds"]])
-    fv = pd.Series(tp["yhat"].values, index=train.index)
-    res = (train - fv).values
-    return dict(forecast=fc, ci=ci_df, fitted=fv, residuals=res,
-                metrics=compute_full_metrics(test.values, fc.values, res))
-
-
-FITTERS = {
-    "ARIMA":     _fit_arima,
-    "SARIMA":    _fit_sarima,
-    "SARIMAX":   _fit_sarimax,
-    "AutoARIMA": _fit_auto_arima,
-    "Prophet":   _fit_prophet,
-}
+# The legacy Streamlit app intentionally imports FITTERS from the core pipeline.
+# Model training logic lives in src/pipelines/forecasting_pipeline.py only.
 
 
 def run_selected_models(selected: list) -> Dict:
@@ -298,7 +207,7 @@ def run_selected_models(selected: list) -> Dict:
         prog.progress((i) / len(selected))
         t0 = time.time()
         try:
-            out = FITTERS[name](train, test)
+            out = FITTERS[name](train, test, st.session_state.df)
             out["train_time"] = round(time.time() - t0, 2)
             results[name] = out
         except Exception as e:
@@ -375,7 +284,7 @@ def page_home():
         |---|---|
         | **Data Ingestion** | Upload CSV/XLSX or use the built-in demo dataset |
         | **EDA** | Interactive trend, seasonality, and distribution analysis |
-        | **Modelling** | Train ARIMA, SARIMA, SARIMAX, AutoARIMA, Prophet |
+        | **Modelling** | Train ARIMA, SARIMA, SARIMAX, AutoARIMA, HoltWinters, Prophet |
         | **Evaluation** | MAE, RMSE, MAPE, R², Stability Score, Composite Rank |
         | **Diagnostics** | Residual plots, ACF, Q-Q, ADF, Shapiro-Wilk, Jarque-Bera |
         | **Export** | CSV forecasts, metrics, leaderboard |
@@ -388,6 +297,7 @@ def page_home():
             "SARIMA":    ("Seasonal ARIMA (quarterly)", "#10B981"),
             "SARIMAX":   ("SARIMA + exogenous vars",     "#F59E0B"),
             "AutoARIMA": ("Grid-search order selection", "#EF4444"),
+            "HoltWinters": ("Trend + quarterly seasonality", "#8B5CF6"),
             "Prophet":   ("Meta additive model",         "#EC4899"),
         }
         for model, (desc, col) in models_info.items():
@@ -618,8 +528,9 @@ def page_forecasting():
         desc_map = {
             "ARIMA":     "Auto-Regressive Integrated Moving Average — classical univariate model.",
             "SARIMA":    "ARIMA with seasonal components — handles Q4 effects well.",
-            "SARIMAX":   "SARIMA with exogenous time index — improves trend capture.",
+            "SARIMAX":   "SARIMA with real macro exogenous variables.",
             "AutoARIMA": "pmdarima grid-search — automatically selects optimal p,d,q.",
+            "HoltWinters": "Exponential smoothing with additive trend and quarterly seasonality.",
             "Prophet":   "Meta additive model — handles holidays, trend changepoints.",
         }
         for model in selected:
@@ -695,7 +606,8 @@ def page_forecasting():
         fc   = rec["forecast"]
         ci   = rec["ci"]
         col  = {"ARIMA":"#3B82F6","SARIMA":"#10B981","SARIMAX":"#F59E0B",
-                 "AutoARIMA":"#EF4444","Prophet":"#EC4899"}.get(selected_detail, "#3B82F6")
+                 "AutoARIMA":"#EF4444","HoltWinters":"#8B5CF6",
+                 "Prophet":"#EC4899"}.get(selected_detail, "#3B82F6")
         fig  = go.Figure()
         fig.add_trace(go.Scatter(x=train.index.astype(str), y=train.values,
                                   name="Train", line=dict(color="#94A3B8", width=2)))
@@ -1011,6 +923,7 @@ def page_settings():
         | SARIMA | statsmodels | Seasonal |
         | SARIMAX | statsmodels | Exogenous |
         | AutoARIMA | pmdarima | Auto-selection |
+        | HoltWinters | statsmodels | Exponential smoothing |
         | Prophet | prophet (Meta) | Additive |
 
         ### 📐 Metrics

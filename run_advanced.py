@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
 from src.logger import get_logger, PipelineLogger
-from src.pipelines.forecasting_pipeline import ForecastingPipeline
+from src.pipelines.forecasting_pipeline import ForecastingPipeline, FITTERS
 from src.advanced.ensemble import EnsembleForecaster
 from src.advanced.anomaly_detection import detect_anomalies
 from src.advanced.drift_detection import DriftDetector
@@ -63,7 +63,7 @@ def main() -> None:
         pipeline = ForecastingPipeline(
             data_path=args.data,
             train_frac=args.train_frac,
-            models=["ARIMA", "SARIMA", "SARIMAX", "AutoARIMA", "Prophet"],
+            models=list(FITTERS.keys()),
             run_cv=False,
         )
         pipeline.run()
@@ -129,6 +129,22 @@ def main() -> None:
                 live_residuals=best_res[-len(test):],
             )
         print(drift_report.summary())
+
+        drift_path = out_dir / "drift_report.csv"
+        drift_payload = {
+            "ks_statistic": drift_report.ks_statistic,
+            "ks_p_value": drift_report.ks_p_value,
+            "ks_drift": drift_report.ks_drift,
+            "cusum_signal": drift_report.cusum_signal,
+            "cusum_max": drift_report.cusum_max,
+            "residual_drift": drift_report.residual_drift,
+            "residual_z": drift_report.residual_z,
+            "overall_drift": drift_report.overall_drift,
+            "severity": drift_report.severity,
+        }
+        import pandas as pd
+        pd.DataFrame([drift_payload]).to_csv(drift_path, index=False)
+        _log.info("Drift report saved → %s", drift_path)
 
     # ── Step 5: Confidence Scoring ────────────────────────────────────────
     if not args.no_confidence:
