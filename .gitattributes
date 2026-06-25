@@ -1,0 +1,5 @@
+# Generated reports and visual exports should not dominate GitHub language stats.
+reports/*.html linguist-generated=true
+visualizations/output/*.html linguist-generated=true
+visualizations/output/*.png linguist-generated=true
+web/public/data/*.json linguist-generated=true
