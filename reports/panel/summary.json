@@ -36,6 +36,13 @@
       "series_origins": 35586
     },
     {
+      "model": "Chronos2",
+      "MASE_mean": 1.8335,
+      "MASE_median": 1.4958,
+      "share_beats_SeasonalNaive": 0.5125,
+      "series_origins": 35586
+    },
+    {
       "model": "GlobalLGBM",
       "MASE_mean": 1.8472,
       "MASE_median": 1.5527,
@@ -90,6 +97,16 @@
         0.0911
       ],
       "banks": 4094
+    },
+    {
+      "a": "Chronos2",
+      "b": "AutoETS",
+      "mean_diff": 0.022,
+      "ci95": [
+        0.0085,
+        0.0359
+      ],
+      "banks": 4094
     }
   ],
   "stress_2023Q1": {
@@ -112,15 +129,27 @@
     "GlobalLGBM": {
       "MASE_h1_2023Q1": 1.5148,
       "MASE_h1_other": 0.889
+    },
+    "Chronos2": {
+      "MASE_h1_2023Q1": 1.461,
+      "MASE_h1_other": 1.0476
     }
   },
+  "aggregate_ape_pct_h1": {
+    "SeasonalNaive": 8.131,
+    "Naive": 2.219,
+    "AutoETS": 3.422,
+    "AutoTheta": 3.775,
+    "GlobalLGBM": 3.576,
+    "Chronos2": 3.279
+  },
+  "chronos_sample_banks_per_origin": null,
   "seconds_per_origin": {
-    "stats": 48.8,
-    "lgbm": 4.0
+    "chronos": 14.7
   },
   "run": {
-    "timestamp": "2026-10-21T00:57:41",
-    "git_sha": "6261f352e7fe01ead99b0d52a03ff1bb66209756",
+    "timestamp": "2026-10-21T01:20:06",
+    "git_sha": "eb0784e4e6a751bbd227b4f99ef7fb1a87b1750e",
     "config": {
       "origins": 9,
       "h": 4,
@@ -129,7 +158,7 @@
         "theta",
         "lgbm"
       ],
-      "chronos": false,
+      "chronos": true,
       "min_history": 16,
       "lgbm_objective": "l2"
     },

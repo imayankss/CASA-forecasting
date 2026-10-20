@@ -10,7 +10,11 @@ Usage
 -----
     python run_panel.py                      # baselines + global LightGBM
     python run_panel.py --models lgbm        # one family only
-    python run_panel.py --chronos            # add Chronos-2 zero-shot (slow on CPU)
+    python run_panel.py --chronos-only       # Chronos-2 zero-shot, then merged with the saved main run
+    python run_panel.py --transfer [--chronos-only]   # BOI transfer (Task B.7)
+
+Chronos runs in its own process: torch and LightGBM each load an OpenMP
+runtime, and using both in one process deadlocked on macOS.
 """
 
 import argparse
@@ -36,6 +40,9 @@ logger = get_logger("run_panel")
 
 PANEL = ROOT / "data" / "external" / "fdic" / "panel.parquet"
 OUT_DIR = ROOT / "reports" / "panel"
+ERRORS = {tag: ROOT / "data" / "external" / "fdic" / f"backtest_errors_{tag}.parquet"
+          for tag in ("main", "chronos")}
+KEYS = ["unique_id", "ds", "h", "origin", "actual", "scale"]
 ORIGINS = pd.date_range("2021-12-31", "2023-12-31", freq="QE")
 # Earlier origins used only to choose model settings, never for reported results
 VALIDATION_ORIGINS = pd.to_datetime(["2019-12-31", "2020-12-31"])
@@ -104,10 +111,61 @@ def fit_lgbm(train: pd.DataFrame, objective: str = "l2") -> pd.DataFrame:
     return mlf.predict(H)
 
 
-def fit_chronos(train: pd.DataFrame) -> pd.DataFrame:
+def aggregate_check(errors: pd.DataFrame) -> dict:
+    """Sum of bank forecasts vs sum of actuals per target quarter (h=1): absolute % error."""
+    one = errors[errors["h"] == 1]
+    preds = [c for c in one.columns if c.startswith("pred_")]
+    agg = one.groupby("ds")[["actual", *preds]].sum()
+    ape = agg[preds].sub(agg["actual"], axis=0).abs().div(agg["actual"], axis=0) * 100
+    return {c[5:]: round(float(v), 3) for c, v in ape.mean().items()}
+
+
+BOI = ROOT / "data" / "real" / "boi_casa_quarterly.csv"
+BOI_ORIGIN = pd.Timestamp("2023-12-31")
+
+
+def transfer_to_boi(df: pd.DataFrame, chronos: bool) -> pd.DataFrame:
+    """Train on the FDIC panel up to the BOI holdout origin, forecast BOI's real CASA series.
+
+    The model works on log differences, so the currency and scale difference
+    (US $ thousands vs Rs crore) does not matter.
+    """
+    boi = pd.read_csv(BOI, parse_dates=["quarter_end"])
+    boi = pd.DataFrame({"unique_id": "BOI", "ds": boi["quarter_end"], "y": np.log(boi["casa_cr"])})
+    hist, test = boi[boi["ds"] <= BOI_ORIGIN], boi[boi["ds"] > BOI_ORIGIN]
+    assert_temporal_split(pd.Index(hist["ds"]), pd.Index(test["ds"]))
+    train = df[df["ds"] <= BOI_ORIGIN]
+    h = len(test)
+    if chronos:
+        fc = fit_chronos(hist, h)
+        out = test.merge(fc, on=["unique_id", "ds"])
+        return pd.DataFrame({"ds": out["ds"], "actual": np.exp(out["y"]), "Chronos2": np.exp(out["Chronos2"])})
+    import lightgbm as lgb
+    from mlforecast import MLForecast
+    from mlforecast.lag_transforms import RollingMean
+    from mlforecast.target_transforms import Differences
+    mlf = MLForecast(
+        models={"GlobalLGBM_FDIC": lgb.LGBMRegressor(
+            n_estimators=400, learning_rate=0.05, num_leaves=63, min_child_samples=100,
+            subsample=0.8, subsample_freq=1, colsample_bytree=0.8, random_state=SEED,
+            n_jobs=6, verbose=-1)},
+        freq="QE", lags=list(range(1, 9)),
+        lag_transforms={1: [RollingMean(window_size=4), RollingMean(window_size=8)]},
+        date_features=["quarter"], target_transforms=[Differences([1])],
+    )
+    mlf.fit(train, static_features=[])
+    fc = mlf.predict(h, new_df=hist)
+    out = test.merge(fc, on=["unique_id", "ds"])
+    res = pd.DataFrame({"ds": out["ds"], "actual": np.exp(out["y"])})
+    for c in [c for c in fc.columns if c not in ("unique_id", "ds")]:
+        res[c] = np.exp(out[c])
+    return res
+
+
+def fit_chronos(train: pd.DataFrame, h: int = H) -> pd.DataFrame:
     from chronos import BaseChronosPipeline
     pipe = BaseChronosPipeline.from_pretrained("amazon/chronos-2", device_map="cpu")
-    pred = pipe.predict_df(train, prediction_length=H, quantile_levels=[0.5],
+    pred = pipe.predict_df(train, prediction_length=h, quantile_levels=[0.5],
                            id_column="unique_id", timestamp_column="ds", target="y")
     return pred.rename(columns={"predictions": "Chronos2"})[["unique_id", "ds", "Chronos2"]]
 
@@ -121,7 +179,8 @@ def score(fc: pd.DataFrame, test: pd.DataFrame, scale: pd.Series, origin) -> pd.
     rows["origin"] = origin
     rows["actual"] = actual
     for c in models:
-        rows[f"ae_{c}"] = (actual - np.exp(m[c])).abs()
+        rows[f"pred_{c}"] = np.exp(m[c])
+        rows[f"ae_{c}"] = (actual - rows[f"pred_{c}"]).abs()
     rows["scale"] = rows["unique_id"].map(scale)
     return rows
 
@@ -153,28 +212,49 @@ def paired_bootstrap(mase: pd.DataFrame, a: str, b: str, n_boot: int = 2000) -> 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--models", nargs="+", default=["ets", "theta", "lgbm"])
-    ap.add_argument("--chronos", action="store_true")
+    ap.add_argument("--chronos-only", action="store_true")
     ap.add_argument("--origins", type=int, default=len(ORIGINS))
     ap.add_argument("--validation", action="store_true", help="score on validation origins only")
     ap.add_argument("--objective", default="l2")
+    ap.add_argument("--chronos-sample", type=int, default=0,
+                    help="score Chronos on a random sample of N banks per origin (cut rule)")
+    ap.add_argument("--transfer", action="store_true", help="only run the BOI transfer (Task B.7)")
     args = ap.parse_args()
 
     df = load_panel()
+    if args.transfer:
+        res = transfer_to_boi(df, chronos=args.chronos_only)
+        path = OUT_DIR / "boi_transfer_forecasts.csv"
+        if path.exists():
+            prev = pd.read_csv(path, parse_dates=["ds"])
+            res = prev.drop(columns=[c for c in res.columns if c in prev.columns and c not in ("ds", "actual")]) \
+                      .merge(res, on=["ds", "actual"], how="outer")
+        OUT_DIR.mkdir(parents=True, exist_ok=True)
+        res.round(1).to_csv(path, index=False)
+        logger.info("\n" + res.round(0).to_string())
+        return
     logger.info(f"panel: {len(df):,} rows, {df['unique_id'].nunique():,} banks")
     all_errors, timings = [], {}
     origins = VALIDATION_ORIGINS if args.validation else ORIGINS[: args.origins]
     for origin in origins:
         train, test = split_at(df, origin)
-        t0 = time.time()
-        fc = fit_stats(train, args.models)
-        timings.setdefault("stats", []).append(time.time() - t0)
-        if "lgbm" in args.models:
+        if args.chronos_only:
+            fc = None
+        else:
+            t0 = time.time()
+            fc = fit_stats(train, args.models)
+            timings.setdefault("stats", []).append(time.time() - t0)
+        if "lgbm" in args.models and not args.chronos_only:
             t0 = time.time()
             fc = fc.merge(fit_lgbm(train, args.objective), on=["unique_id", "ds"])
             timings.setdefault("lgbm", []).append(time.time() - t0)
-        if args.chronos:
+        if args.chronos_only:
             t0 = time.time()
-            fc = fc.merge(fit_chronos(train), on=["unique_id", "ds"])
+            ctrain = train
+            if args.chronos_sample:
+                ids = train["unique_id"].drop_duplicates().sample(args.chronos_sample, random_state=SEED)
+                ctrain = train[train["unique_id"].isin(ids)]
+            fc = fit_chronos(ctrain)
             timings.setdefault("chronos", []).append(time.time() - t0)
         errs = score(fc, test, mase_scale(train), origin)
         all_errors.append(errs)
@@ -182,6 +262,18 @@ def main() -> None:
                     + ", ".join(f"{k} {v[-1]:.0f}s" for k, v in timings.items()))
 
     errors = pd.concat(all_errors, ignore_index=True)
+    tag = "chronos" if args.chronos_only else "main"
+    if not args.validation:
+        errors.to_parquet(ERRORS[tag])
+    if args.validation:
+        pass
+    elif ERRORS["main"].exists() and ERRORS["chronos"].exists():
+        main_e = pd.read_parquet(ERRORS["main"])
+        chron = pd.read_parquet(ERRORS["chronos"])
+        errors = main_e.merge(chron.drop(columns=["actual", "scale"]), on=["unique_id", "ds", "h", "origin"])
+        logger.info(f"merged with saved {'main' if args.chronos_only else 'chronos'} run: {len(errors):,} rows")
+    elif args.chronos_only:
+        logger.info("no saved main run to merge with")
     table, mase = summarise(errors)
     logger.info("\n" + table.to_string())
 
@@ -205,9 +297,11 @@ def main() -> None:
         "origins": [str(o.date()) for o in ORIGINS[: args.origins]], "horizon": H,
         "leaderboard": table.reset_index(names="model").to_dict("records"),
         "paired_bootstrap_vs_AutoETS": tests, "stress_2023Q1": stress,
+        "aggregate_ape_pct_h1": aggregate_check(errors),
+        "chronos_sample_banks_per_origin": args.chronos_sample or None,
         "seconds_per_origin": {k: round(float(np.mean(v)), 1) for k, v in timings.items()},
         "run": run_metadata({"origins": len(ORIGINS[: args.origins]), "h": H, "models": args.models,
-                             "chronos": args.chronos, "min_history": MIN_HISTORY,
+                             "chronos": ERRORS["chronos"].exists(), "min_history": MIN_HISTORY,
                              "lgbm_objective": args.objective},
                             [str(PANEL.relative_to(ROOT))]),
     }
