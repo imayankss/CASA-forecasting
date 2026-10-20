@@ -24,10 +24,10 @@ Every headline number below is measured on later time periods than the model was
 |---|---:|---:|
 | Drift (baseline) | **1.11%** | **0.18** |
 | Global LightGBM trained on 6,814 FDIC banks, applied to BOI | 1.30% | — |
-| Holt-Winters | 1.61% | 0.26 |
+| Holt-Winters | 1.62% | 0.26 |
 | SARIMA | 2.52% | 0.41 |
 | Chronos-2 (zero-shot) | 2.58% | — |
-| Prophet | 4.63% | 0.75 |
+| Prophet | 4.63% | 0.74 |
 | Seasonal naive (baseline) | 9.18% | 1.49 |
 
 A straight-line drift was the hardest model to beat on BOI. The model trained only on US banks beat every BOI-fitted statistical model except that baseline.
@@ -123,6 +123,6 @@ web/              Next.js dashboard
 
 ## Resume bullets
 
-- Rebuilt a Bank of India CASA forecasting pipeline on 46 quarters of BOI's published CASA figures. Found and removed a look-ahead leak; a drift baseline led at 1.11% MAPE on a 10-quarter holdout, and a model trained on 6,814 US banks reached 1.30%, beating Holt-Winters (1.61%).
+- Rebuilt a Bank of India CASA forecasting pipeline on 46 quarters of BOI's published CASA figures. Found and removed a look-ahead leak; a drift baseline led at 1.11% MAPE on a 10-quarter holdout, and a model trained on 6,814 US banks reached 1.30%, beating Holt-Winters (1.62%).
 - Scaled deposit forecasting to 6,814 US banks (535k FDIC bank-quarters, 2001–2026) with statistical, global LightGBM and Chronos-2 models over 9 backtest origins. Showed that trend models lost to a no-change forecast through the 2022–23 deposit outflows (MASE 1.32 vs 1.68–1.85).
 - Built CASA-acquisition lead scoring on Santander's public 13.6M-row, 957k-customer dataset. Achieved top-decile lift of 6.98 (95% CI 6.86–7.11) on genuinely new account openings, measured on a later month than training, vs 6.15 for logistic regression.
