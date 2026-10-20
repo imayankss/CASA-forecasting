@@ -227,8 +227,8 @@ def main() -> None:
         path = OUT_DIR / "boi_transfer_forecasts.csv"
         if path.exists():
             prev = pd.read_csv(path, parse_dates=["ds"])
-            res = prev.drop(columns=[c for c in res.columns if c in prev.columns and c not in ("ds", "actual")]) \
-                      .merge(res, on=["ds", "actual"], how="outer")
+            res = prev.drop(columns=[c for c in res.columns if c in prev.columns and c != "ds"]) \
+                      .merge(res, on="ds", how="outer")
         OUT_DIR.mkdir(parents=True, exist_ok=True)
         res.round(1).to_csv(path, index=False)
         logger.info("\n" + res.round(0).to_string())
