@@ -1,0 +1,6 @@
+,MASE_mean,MASE_median,share_beats_SeasonalNaive,series_origins
+Naive,1.3241,1.0553,0.7775,35586
+AutoTheta,1.6751,1.4225,0.5631,35586
+AutoETS,1.8139,1.5366,0.5109,35586
+GlobalLGBM,1.8472,1.5527,0.4875,35586
+SeasonalNaive,1.8628,1.6078,0.0,35586
