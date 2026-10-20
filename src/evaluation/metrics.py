@@ -140,6 +140,42 @@ def direction_accuracy(actual: np.ndarray, predicted: np.ndarray) -> float:
 # FULL METRICS SUITE
 # ─────────────────────────────────────────────────────────────
 
+def mase(y_true: np.ndarray, y_pred: np.ndarray, y_train: np.ndarray, m: int = 4) -> float:
+    """Mean absolute scaled error: test MAE over the in-sample seasonal-naive MAE.
+
+    Below 1 means the forecast beats a seasonal-naive forecast on average.
+    """
+    y_true, y_pred, y_train = (np.asarray(a, dtype=float) for a in (y_true, y_pred, y_train))
+    if len(y_train) <= m:
+        return float("nan")
+    scale = np.mean(np.abs(y_train[m:] - y_train[:-m]))
+    if scale == 0:
+        return float("nan")
+    return float(np.mean(np.abs(y_true - y_pred)) / scale)
+
+
+def diebold_mariano(e1: np.ndarray, e2: np.ndarray, h: int = 1):
+    """Diebold-Mariano test on squared errors, with the Harvey-Leybourne-Newbold
+    small-sample correction. Negative statistic means model 1 is more accurate.
+
+    Returns (statistic, two-sided p-value).
+    """
+    from scipy import stats
+
+    d = np.asarray(e1, dtype=float) ** 2 - np.asarray(e2, dtype=float) ** 2
+    n = len(d)
+    d_bar = d.mean()
+    dc = d - d_bar
+    gamma = [np.dot(dc[k:], dc[: n - k]) / n for k in range(h)]
+    var = (gamma[0] + 2 * sum(gamma[1:])) / n
+    if var <= 0:
+        return (0.0, 1.0) if d_bar == 0 else (float("nan"), float("nan"))
+    stat = d_bar / np.sqrt(var)
+    stat *= np.sqrt((n + 1 - 2 * h + h * (h - 1) / n) / n)
+    p = 2 * stats.t.sf(abs(stat), df=n - 1)
+    return float(stat), float(p)
+
+
 def compute_full_metrics(
     actual: np.ndarray,
     predicted: np.ndarray,

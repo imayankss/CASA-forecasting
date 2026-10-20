@@ -251,6 +251,41 @@ def _fit_prophet(train: pd.Series, test: pd.Series, df: Optional[pd.DataFrame] =
     )
 
 
+def _naive_result(train: pd.Series, test: pd.Series, fc_values: np.ndarray,
+                  fitted: pd.Series, params: Dict) -> Dict:
+    """Package a baseline forecast with a residual-based 95% interval."""
+    fc = pd.Series(fc_values, index=test.index)
+    res = (train - fitted).dropna().values
+    sd = float(np.std(res, ddof=1)) if len(res) > 1 else 0.0
+    steps = np.sqrt(np.arange(1, len(test) + 1))
+    ci_df = pd.DataFrame(
+        {"lower": fc.values - 1.96 * sd * steps, "upper": fc.values + 1.96 * sd * steps},
+        index=test.index,
+    )
+    return dict(
+        forecast=fc, ci=ci_df, fitted=fitted, residuals=res,
+        metrics=compute_full_metrics(test.values, fc.values, res),
+        params=params,
+    )
+
+
+def _fit_seasonal_naive(train: pd.Series, test: pd.Series, df: Optional[pd.DataFrame] = None) -> Dict:
+    """Baseline: each quarter repeats the same quarter of the last observed year."""
+    m = 4
+    last_year = train.values[-m:]
+    fc = np.array([last_year[i % m] for i in range(len(test))])
+    fitted = train.shift(m)
+    return _naive_result(train, test, fc, fitted, {"season_length": m})
+
+
+def _fit_drift(train: pd.Series, test: pd.Series, df: Optional[pd.DataFrame] = None) -> Dict:
+    """Baseline: extend the straight line from the first to the last observation."""
+    slope = (train.values[-1] - train.values[0]) / (len(train) - 1)
+    fc = train.values[-1] + slope * np.arange(1, len(test) + 1)
+    fitted = train.shift(1) + slope
+    return _naive_result(train, test, fc, fitted, {"slope_per_quarter": round(float(slope), 2)})
+
+
 FITTERS = {
     "ARIMA":       _fit_arima,
     "SARIMA":      _fit_sarima,
@@ -258,6 +293,8 @@ FITTERS = {
     "AutoARIMA":   _fit_auto_arima,
     "HoltWinters": _fit_holt_winters,
     "Prophet":     _fit_prophet,
+    "SeasonalNaive": _fit_seasonal_naive,
+    "Drift":       _fit_drift,
 }
 
 
@@ -417,6 +454,7 @@ class ForecastingPipeline:
                 predicted=out["forecast"].values,
                 residuals=out["residuals"],
                 train_time=out["train_time"],
+                y_train=self.train.values,
             )
 
             self.registry.register(ModelRecord(
@@ -544,6 +582,12 @@ class ForecastingPipeline:
             fc_path = str(out / "forecast_results.csv")
             fc_df.to_csv(fc_path)
             saved["forecasts"] = fc_path
+
+        dm_df = self.comparison.dm_table(baseline="SeasonalNaive")
+        if not dm_df.empty:
+            dm_path = str(out / "dm_tests.csv")
+            dm_df.to_csv(dm_path)
+            saved["dm_tests"] = dm_path
 
         cv_df = self.cv_summary()
         if not cv_df.empty:
