@@ -1,6 +1,7 @@
 # 📊 BOI CASA Deposit Forecasting Report
 
-> **Bank of India · Data Science Division**  
+> **Bank of India internship project · synthetic data**  
+> ⚠️ The deposit series is synthetic (LLM-generated). Figures do not describe Bank of India's actual deposits.  
 > Time-Series Forecasting — CASA Deposits (2015–2024)
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)  ![Models](https://img.shields.io/badge/Models-5-green)  ![Best_Model](https://img.shields.io/badge/Best_Model-Prophet-brightgreen)  ![MAPE](https://img.shields.io/badge/MAPE-2.03pct-success)  ![License](https://img.shields.io/badge/License-MIT-lightgrey)
@@ -26,7 +27,7 @@
 
 ## 1. Executive Summary
 
-This report presents the results of a comprehensive time-series forecasting study on Bank of India CASA (Current Account Savings Account) deposit data. The study evaluated 5 forecasting models, benchmarked using multiple statistical metrics and walk-forward cross-validation on quarterly deposit data spanning 2015–2024.
+This report presents the results of a comprehensive time-series forecasting study on a synthetic, LLM-generated CASA (Current Account Savings Account) deposit series modelled on Bank of India. The study evaluated 5 forecasting models, benchmarked using multiple statistical metrics and walk-forward cross-validation on quarterly deposit data spanning 2015–2024.
 
 The Prophet model achieved the highest composite score (100.0/100) with a Mean Absolute Percentage Error (MAPE) of 2.03%, an RMSE of 2.43% relative to mean deposits, and an R² of 0.6457. Forecast bias stands at +1.88%, indicating a slight tendency toward over-forecasting. Residual stability score is 40.3/100.
 
@@ -214,11 +215,11 @@ Limitations:
 
 ## 7. Banking Domain Analysis
 
-Bank of India CASA deposits grew 92.6% over the study period, representing a compound annual growth rate (CAGR) of 6.77%. Deposit volatility (coefficient of variation) is 19.14%, indicating moderate intra-series variability.
+The synthetic CASA series grew 92.6% over the study period, representing a compound annual growth rate (CAGR) of 6.77%. Deposit volatility (coefficient of variation) is 19.14%, indicating moderate intra-series variability.
 
 Seasonality analysis reveals that Q4 consistently records the highest deposit inflows, while Q2 records the lowest — a pattern consistent with end-of-fiscal-year banking behaviour in India. Average year-over-year growth stands at 6.77%.
 
-These seasonal and growth patterns were successfully captured by the top-performing models. For operational treasury management, the quarterly seasonality should be factored into liquidity buffers and lending plans, particularly ahead of Q4 where deposit inflows are historically strongest.
+These seasonal and growth patterns were successfully captured by the top-performing models. For operational treasury management, the quarterly seasonality should be factored into liquidity buffers and lending plans, particularly ahead of Q4 where deposit inflows are strongest in this series.
 
 
 ## 8. Recommendations

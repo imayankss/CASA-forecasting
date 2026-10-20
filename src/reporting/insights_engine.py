@@ -113,8 +113,8 @@ def generate_executive_summary(
 
     p1 = (
         f"This report presents the results of a comprehensive time-series "
-        f"forecasting study on Bank of India CASA (Current Account Savings Account) "
-        f"deposit data. The study evaluated {n_models} forecasting models, "
+        f"forecasting study on a synthetic, LLM-generated CASA (Current Account "
+        f"Savings Account) deposit series modelled on Bank of India. The study evaluated {n_models} forecasting models, "
         f"benchmarked using multiple statistical metrics and walk-forward "
         f"cross-validation on quarterly deposit data spanning 2015–2024."
     )
@@ -275,7 +275,7 @@ def generate_banking_narrative(
         best_q, worst_q = 4, 2
 
     return (
-        f"Bank of India CASA deposits grew {total_growth:.1f}% over the study "
+        f"The synthetic CASA series grew {total_growth:.1f}% over the study "
         f"period, representing a compound annual growth rate (CAGR) of "
         f"{cagr:.2f}%. Deposit volatility (coefficient of variation) is "
         f"{volatility:.2f}%, indicating {'stable' if volatility < 10 else 'moderate'} "
@@ -288,7 +288,7 @@ def generate_banking_narrative(
         f"top-performing models. For operational treasury management, the "
         f"quarterly seasonality should be factored into liquidity buffers and "
         f"lending plans, particularly ahead of Q{best_q} where deposit inflows "
-        f"are historically strongest."
+        f"are strongest in this series."
     )
 
 

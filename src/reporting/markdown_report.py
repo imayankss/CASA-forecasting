@@ -104,7 +104,8 @@ def _cover_section(full_insights: dict, pipeline) -> str:
 
     return (
         "# 📊 BOI CASA Deposit Forecasting Report\n\n"
-        "> **Bank of India · Data Science Division**  \n"
+        "> **Bank of India internship project · synthetic data**  \n"
+        "> ⚠️ The deposit series is synthetic (LLM-generated). Figures do not describe Bank of India's actual deposits.  \n"
         "> Time-Series Forecasting — CASA Deposits (2015–2024)\n\n"
         f"{badges}\n\n"
         f"{_hr()}\n"

@@ -230,7 +230,7 @@ def page_home():
         📊 BOI CASA Deposit Forecasting
     </h1>
     <p style='color:#64748B; font-size:1rem; margin-top:4px;'>
-        Enterprise-grade time-series forecasting platform • Bank of India Analytics
+        Time-series forecasting platform • Bank of India internship project (synthetic data)
     </p>
     """, unsafe_allow_html=True)
 
@@ -278,7 +278,7 @@ def page_home():
     with col1:
         st.markdown("## 📖 Platform Overview")
         st.markdown("""
-        This platform provides an end-to-end forecasting workflow for **Bank of India CASA deposits**:
+        This platform provides an end-to-end forecasting workflow for a **synthetic CASA deposit series** (LLM-generated; not Bank of India's actual deposits):
 
         | Stage | Description |
         |---|---|
@@ -412,7 +412,7 @@ def page_upload():
                 📊 BOI CASA Deposit Demo Dataset
             </div>
             <div style='color:#94A3B8; font-size:0.88rem; line-height:1.6;'>
-                Quarterly CASA deposit data from 2015 Q1 to 2024 Q4 (40 periods).<br>
+                Synthetic (LLM-generated) quarterly CASA deposit data from 2015 Q1 to 2024 Q4 (40 periods).<br>
                 Includes pre-computed features: YoY growth, log transform, 
                 seasonal dummies, rolling averages.
             </div>
@@ -915,6 +915,7 @@ def page_settings():
         ### 🎯 Project Purpose
         This platform was developed as part of a **Bank of India data science internship**
         to build a production-ready forecasting system for CASA deposit prediction.
+        Bank data was confidential, so the bundled dataset is synthetic (LLM-generated).
 
         ### 🤖 Models
         | Model | Library | Type |

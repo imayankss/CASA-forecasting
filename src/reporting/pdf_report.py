@@ -222,7 +222,7 @@ def _build_cover(styles: dict, full_insights: dict, pipeline) -> list:
         width="80%", thickness=2,
         color=_rl_colour(_BLUE), spaceAfter=12
     ))
-    elems.append(Paragraph("Bank of India · Data Science Division", S["cover_sub"]))
+    elems.append(Paragraph("Bank of India internship project · synthetic data", S["cover_sub"]))
     elems.append(Spacer(1, 4))
     elems.append(Paragraph(
         f"Report generated: {full_insights.get('timestamp', datetime.now().strftime('%Y-%m-%d %H:%M'))}",
@@ -274,7 +274,7 @@ def _build_cover(styles: dict, full_insights: dict, pipeline) -> list:
     elems.append(HRFlowable(width="100%", thickness=0.5, color=_rl_colour(_MUTED)))
     elems.append(Spacer(1, 8))
     elems.append(Paragraph(
-        "CONFIDENTIAL — Internal Use Only · BOI Data Science Internship Project",
+        "Synthetic data — not Bank of India figures · BOI Data Science Internship Project",
         S["footer"]
     ))
     elems.append(PageBreak())
@@ -485,7 +485,7 @@ def _on_page(canvas, doc, best_model: str):
     # Footer
     canvas.setFillColor(_rl_colour(_MUTED))
     canvas.setFont("Helvetica", 8)
-    canvas.drawString(doc.leftMargin, 14, "Confidential — BOI Data Science Division")
+    canvas.drawString(doc.leftMargin, 14, "Synthetic data — not Bank of India figures")
     canvas.drawRightString(w - doc.rightMargin, 14, f"Page {doc.page}")
 
     canvas.restoreState()
@@ -550,7 +550,7 @@ def generate_pdf_report(
             topMargin=28 * mm,
             bottomMargin=20 * mm,
             title="BOI CASA Deposit Forecasting Report",
-            author="BOI Data Science Division",
+            author="BOI Data Science Internship Project",
             subject="Time-Series Forecasting — CASA Deposits",
         )
 

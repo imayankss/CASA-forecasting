@@ -5,13 +5,15 @@
 [![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)](.github/workflows/ci.yml)
 [![Tests](https://img.shields.io/badge/Tests-107_Passing-success?style=for-the-badge)](tests/)
 
-CASA Intelligence Dashboard is a banking forecasting intelligence project for Bank of India CASA deposits. The Python pipeline trains and evaluates time-series models, exports verified artifacts, and feeds a modern static Next.js dashboard for model comparison, risk monitoring, confidence scoring, seasonality analytics, and scenario simulation.
+CASA Intelligence Dashboard is a CASA deposit forecasting project built during a Bank of India data science internship. The Python pipeline trains and evaluates time-series models, exports its artifacts, and feeds a modern static Next.js dashboard for model comparison, risk monitoring, confidence scoring, seasonality analytics, and scenario simulation.
+
+> **Data note: the data in this repository is synthetic.** Bank data was confidential, so `data/raw/boi_casa_deposits.csv` (40 quarters, 2015 Q1 to 2024 Q4) was generated with an LLM (ChatGPT) to resemble a bank's quarterly CASA series. `data/raw/macro_indicators.csv` was produced the same way: its values approximate public Indian figures but have not been checked against official sources. Every number in this repository describes the synthetic series, not Bank of India's actual deposits. See [`data/raw/README.md`](data/raw/README.md).
 
 The Streamlit dashboard remains available in `dashboard/` as a legacy/internal demo. The portfolio product layer now lives in `web/`.
 
-## Verified Results
+## Results on synthetic data
 
-Last regenerated in this workspace on June 24, 2026.
+Last regenerated in this workspace on June 24, 2026. These results come from the synthetic series described above.
 
 | Rank | Model | MAPE | RMSE % | R2 | Adj R2 | Direction Acc | Stability | Composite |
 |---:|---|---:|---:|---:|---:|---:|---:|---:|
@@ -22,7 +24,7 @@ Last regenerated in this workspace on June 24, 2026.
 | 5 | SARIMA | 3.831% | 4.214% | -0.0658 | -0.2434 | 100.00% | 0.00 | 3.85 |
 | 6 | AutoARIMA | 3.942% | 4.351% | -0.1363 | -0.3257 | 100.00% | 0.00 | 0.00 |
 
-Additional verified artifacts:
+Additional artifacts:
 
 - `data/processed/model_leaderboard.csv` contains all 6 models.
 - `reports/model_registry.json` contains all 6 trained model records.
@@ -187,7 +189,7 @@ cd web && npm run build        -> passed
 
 ## Resume Bullets
 
-- Built an end-to-end CASA deposit forecasting system with ARIMA, SARIMA, SARIMAX, AutoARIMA, HoltWinters, Prophet, and ensemble forecasting.
+- Built an end-to-end CASA deposit forecasting system with ARIMA, SARIMA, SARIMAX, AutoARIMA, HoltWinters, Prophet, and ensemble forecasting, developed on synthetic data because bank data was confidential.
 - Added train-only exogenous scaling safeguards to reduce data leakage risk in SARIMAX forecasting.
 - Created a static JSON export layer that decouples Python ML artifacts from a modern Next.js analytics dashboard.
 - Designed a recruiter-ready banking intelligence dashboard with model leaderboard, forecast explorer, confidence timeline, drift status, and scenario simulator.

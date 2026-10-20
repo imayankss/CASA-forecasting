@@ -423,7 +423,7 @@ family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <h1>BOI CASA Deposit Forecasting Report</h1>
   </div>
   <p style="color:#64748B;margin-bottom:12px;">
-    Bank of India · Data Science Division
+    Bank of India internship project · synthetic data
     &nbsp;·&nbsp; Generated: <b style="color:#94A3B8;">{ts_str}</b>
     &nbsp;·&nbsp; Best Model: <span class="badge badge-green">{best}</span>
   </p>
@@ -484,7 +484,7 @@ family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <footer style="border-top:1px solid #1E2D4A;padding-top:24px;margin-top:40px;
                color:#334155;font-size:0.78rem;text-align:center;">
   BOI CASA Deposit Forecasting Platform v1.0 ·
-  Confidential — Internal Use Only ·
+  Synthetic data — not Bank of India figures ·
   BOI Data Science Internship Project
 </footer>
 
