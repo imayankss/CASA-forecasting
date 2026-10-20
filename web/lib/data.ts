@@ -16,7 +16,7 @@ import type {
 
 const dataDir = path.join(process.cwd(), "public", "data");
 
-async function readJson<T>(fileName: string, fallback: T): Promise<T> {
+export async function readJson<T>(fileName: string, fallback: T): Promise<T> {
   try {
     const file = await fs.readFile(path.join(dataDir, fileName), "utf8");
     return JSON.parse(file) as T;

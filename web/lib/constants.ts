@@ -6,6 +6,8 @@ import {
   LineChart,
   Layers3,
   Map,
+  Building2,
+  Users,
   Radar,
   SlidersHorizontal
 } from "lucide-react";
@@ -18,7 +20,9 @@ export const navItems = [
   { href: "/diagnostics", label: "Diagnostics", icon: Activity },
   { href: "/seasonality", label: "Seasonality", icon: Layers3 },
   { href: "/scenario", label: "Scenario", icon: SlidersHorizontal },
-  { href: "/methodology", label: "Methodology", icon: Map }
+  { href: "/methodology", label: "Methodology", icon: Map },
+  { href: "/panel", label: "Real: Banks", icon: Building2 },
+  { href: "/propensity", label: "Real: Customers", icon: Users }
 ];
 
 export const modelColors: Record<string, string> = {

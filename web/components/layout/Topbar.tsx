@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { navItems } from "@/lib/constants";
 import type { Manifest } from "@/lib/types";
 
-export function Topbar({ manifest }: { manifest: Manifest }) {
+export function Topbar({ manifest, dataLabel }: { manifest: Manifest; dataLabel: string }) {
   return (
     <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-950/55 px-4 py-3 backdrop-blur-xl lg:px-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -22,6 +22,7 @@ export function Topbar({ manifest }: { manifest: Manifest }) {
         </div>
 
         <div className="hidden items-center gap-2 lg:flex">
+          <Badge variant={dataLabel.startsWith("Real") ? "success" : "muted"}>{dataLabel}</Badge>
           <Badge variant="success">
             <Database className="mr-1 h-3 w-3" />
             {manifest.model_count} models

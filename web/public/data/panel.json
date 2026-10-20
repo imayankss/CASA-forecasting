@@ -1,0 +1,173 @@
+{
+  "panel_rows": 535249,
+  "banks": 6814,
+  "origins": [
+    "2021-12-31",
+    "2022-03-31",
+    "2022-06-30",
+    "2022-09-30",
+    "2022-12-31",
+    "2023-03-31",
+    "2023-06-30",
+    "2023-09-30",
+    "2023-12-31"
+  ],
+  "horizon": 4,
+  "leaderboard": [
+    {
+      "model": "Naive",
+      "MASE_mean": 1.3241,
+      "MASE_median": 1.0553,
+      "share_beats_SeasonalNaive": 0.7775,
+      "series_origins": 35586
+    },
+    {
+      "model": "AutoTheta",
+      "MASE_mean": 1.6751,
+      "MASE_median": 1.4225,
+      "share_beats_SeasonalNaive": 0.5631,
+      "series_origins": 35586
+    },
+    {
+      "model": "AutoETS",
+      "MASE_mean": 1.8139,
+      "MASE_median": 1.5366,
+      "share_beats_SeasonalNaive": 0.5109,
+      "series_origins": 35586
+    },
+    {
+      "model": "Chronos2",
+      "MASE_mean": 1.8335,
+      "MASE_median": 1.4958,
+      "share_beats_SeasonalNaive": 0.5125,
+      "series_origins": 35586
+    },
+    {
+      "model": "GlobalLGBM",
+      "MASE_mean": 1.8472,
+      "MASE_median": 1.5527,
+      "share_beats_SeasonalNaive": 0.4875,
+      "series_origins": 35586
+    },
+    {
+      "model": "SeasonalNaive",
+      "MASE_mean": 1.8628,
+      "MASE_median": 1.6078,
+      "share_beats_SeasonalNaive": 0.0,
+      "series_origins": 35586
+    }
+  ],
+  "paired_bootstrap_vs_AutoETS": [
+    {
+      "a": "SeasonalNaive",
+      "b": "AutoETS",
+      "mean_diff": 0.07,
+      "ci95": [
+        0.0495,
+        0.0901
+      ],
+      "banks": 4094
+    },
+    {
+      "a": "Naive",
+      "b": "AutoETS",
+      "mean_diff": -0.4792,
+      "ci95": [
+        -0.4953,
+        -0.4629
+      ],
+      "banks": 4094
+    },
+    {
+      "a": "AutoTheta",
+      "b": "AutoETS",
+      "mean_diff": -0.1358,
+      "ci95": [
+        -0.1483,
+        -0.1233
+      ],
+      "banks": 4094
+    },
+    {
+      "a": "GlobalLGBM",
+      "b": "AutoETS",
+      "mean_diff": 0.0332,
+      "ci95": [
+        -0.0038,
+        0.0911
+      ],
+      "banks": 4094
+    },
+    {
+      "a": "Chronos2",
+      "b": "AutoETS",
+      "mean_diff": 0.022,
+      "ci95": [
+        0.0085,
+        0.0359
+      ],
+      "banks": 4094
+    }
+  ],
+  "stress_2023Q1": {
+    "SeasonalNaive": {
+      "MASE_h1_2023Q1": 1.5752,
+      "MASE_h1_other": 2.0645
+    },
+    "Naive": {
+      "MASE_h1_2023Q1": 1.0008,
+      "MASE_h1_other": 0.8485
+    },
+    "AutoETS": {
+      "MASE_h1_2023Q1": 1.3031,
+      "MASE_h1_other": 0.931
+    },
+    "AutoTheta": {
+      "MASE_h1_2023Q1": 1.2217,
+      "MASE_h1_other": 0.9217
+    },
+    "GlobalLGBM": {
+      "MASE_h1_2023Q1": 1.5148,
+      "MASE_h1_other": 0.889
+    },
+    "Chronos2": {
+      "MASE_h1_2023Q1": 1.461,
+      "MASE_h1_other": 1.0476
+    }
+  },
+  "aggregate_ape_pct_h1": {
+    "SeasonalNaive": 8.131,
+    "Naive": 2.219,
+    "AutoETS": 3.422,
+    "AutoTheta": 3.775,
+    "GlobalLGBM": 3.576,
+    "Chronos2": 3.279
+  },
+  "chronos_sample_banks_per_origin": null,
+  "seconds_per_origin": {
+    "chronos": 14.7
+  },
+  "run": {
+    "timestamp": "2026-10-21T01:20:06",
+    "git_sha": "eb0784e4e6a751bbd227b4f99ef7fb1a87b1750e",
+    "config": {
+      "origins": 9,
+      "h": 4,
+      "models": [
+        "ets",
+        "theta",
+        "lgbm"
+      ],
+      "chronos": true,
+      "min_history": 16,
+      "lgbm_objective": "l2"
+    },
+    "data_snapshot": [
+      {
+        "path": "data/external/fdic/panel.parquet",
+        "bytes": 1781726,
+        "sha256": "f69f7d4a393fb435e49bf59f05709176487b85aa99bc64577427377f61200d75"
+      }
+    ]
+  }
+}

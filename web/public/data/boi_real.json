@@ -1,0 +1,306 @@
+{
+  "series": [
+    {
+      "quarter_end": "2015-03-31",
+      "casa_cr": 114386.0,
+      "casa_ratio_reported": 29.48
+    },
+    {
+      "quarter_end": "2015-06-30",
+      "casa_cr": 115737.0,
+      "casa_ratio_reported": null
+    },
+    {
+      "quarter_end": "2015-09-30",
+      "casa_cr": 119513.0,
+      "casa_ratio_reported": 31.0
+    },
+    {
+      "quarter_end": "2015-12-31",
+      "casa_cr": 123907.0,
+      "casa_ratio_reported": 32.26
+    },
+    {
+      "quarter_end": "2016-03-31",
+      "casa_cr": 127924.0,
+      "casa_ratio_reported": 34.18
+    },
+    {
+      "quarter_end": "2016-06-30",
+      "casa_cr": 131272.0,
+      "casa_ratio_reported": null
+    },
+    {
+      "quarter_end": "2016-09-30",
+      "casa_cr": 134789.0,
+      "casa_ratio_reported": 36.0
+    },
+    {
+      "quarter_end": "2016-12-31",
+      "casa_cr": 170385.0,
+      "casa_ratio_reported": 40.87
+    },
+    {
+      "quarter_end": "2017-03-31",
+      "casa_cr": 166608.0,
+      "casa_ratio_reported": 39.84
+    },
+    {
+      "quarter_end": "2017-06-30",
+      "casa_cr": 164332.0,
+      "casa_ratio_reported": 39.12
+    },
+    {
+      "quarter_end": "2017-09-30",
+      "casa_cr": 162770.0,
+      "casa_ratio_reported": 39.01
+    },
+    {
+      "quarter_end": "2017-12-31",
+      "casa_cr": 165621.0,
+      "casa_ratio_reported": 40.36
+    },
+    {
+      "quarter_end": "2018-03-31",
+      "casa_cr": 172787.0,
+      "casa_ratio_reported": 41.43
+    },
+    {
+      "quarter_end": "2018-06-30",
+      "casa_cr": 169916.0,
+      "casa_ratio_reported": 41.76
+    },
+    {
+      "quarter_end": "2018-09-30",
+      "casa_cr": 170206.0,
+      "casa_ratio_reported": 41.44
+    },
+    {
+      "quarter_end": "2018-12-31",
+      "casa_cr": 175010.0,
+      "casa_ratio_reported": 42.65
+    },
+    {
+      "quarter_end": "2019-03-31",
+      "casa_cr": 181765.0,
+      "casa_ratio_reported": 43.36
+    },
+    {
+      "quarter_end": "2019-06-30",
+      "casa_cr": 180186.57,
+      "casa_ratio_reported": 43.11
+    },
+    {
+      "quarter_end": "2019-09-30",
+      "casa_cr": 183397.0,
+      "casa_ratio_reported": 42.35
+    },
+    {
+      "quarter_end": "2019-12-31",
+      "casa_cr": 191735.0,
+      "casa_ratio_reported": 42.69
+    },
+    {
+      "quarter_end": "2020-03-31",
+      "casa_cr": 197751.0,
+      "casa_ratio_reported": 41.5
+    },
+    {
+      "quarter_end": "2020-06-30",
+      "casa_cr": 207370.0,
+      "casa_ratio_reported": 40.6
+    },
+    {
+      "quarter_end": "2020-09-30",
+      "casa_cr": 207280.0,
+      "casa_ratio_reported": 39.49
+    },
+    {
+      "quarter_end": "2020-12-31",
+      "casa_cr": 214826.0,
+      "casa_ratio_reported": 40.61
+    },
+    {
+      "quarter_end": "2021-03-31",
+      "casa_cr": 224669.0,
+      "casa_ratio_reported": 41.27
+    },
+    {
+      "quarter_end": "2021-06-30",
+      "casa_cr": 235980.0,
+      "casa_ratio_reported": 43.22
+    },
+    {
+      "quarter_end": "2021-09-30",
+      "casa_cr": 232797.0,
+      "casa_ratio_reported": 43.11
+    },
+    {
+      "quarter_end": "2021-12-31",
+      "casa_cr": 237906.0,
+      "casa_ratio_reported": 44.07
+    },
+    {
+      "quarter_end": "2022-03-31",
+      "casa_cr": 245464.0,
+      "casa_ratio_reported": 45.02
+    },
+    {
+      "quarter_end": "2022-06-30",
+      "casa_cr": 242300.0,
+      "casa_ratio_reported": 44.7
+    },
+    {
+      "quarter_end": "2022-09-30",
+      "casa_cr": 242230.0,
+      "casa_ratio_reported": 44.12
+    },
+    {
+      "quarter_end": "2022-12-31",
+      "casa_cr": 246718.0,
+      "casa_ratio_reported": 44.56
+    },
+    {
+      "quarter_end": "2023-03-31",
+      "casa_cr": 252149.0,
+      "casa_ratio_reported": 44.73
+    },
+    {
+      "quarter_end": "2023-06-30",
+      "casa_cr": 260615.0,
+      "casa_ratio_reported": 44.52
+    },
+    {
+      "quarter_end": "2023-09-30",
+      "casa_cr": 256956.0,
+      "casa_ratio_reported": 43.13
+    },
+    {
+      "quarter_end": "2023-12-31",
+      "casa_cr": 261335.0,
+      "casa_ratio_reported": 43.88
+    },
+    {
+      "quarter_end": "2024-03-31",
+      "casa_cr": 269872.0,
+      "casa_ratio_reported": 43.21
+    },
+    {
+      "quarter_end": "2024-06-30",
+      "casa_cr": 274973.0,
+      "casa_ratio_reported": 42.68
+    },
+    {
+      "quarter_end": "2024-09-30",
+      "casa_cr": 275618.0,
+      "casa_ratio_reported": 41.18
+    },
+    {
+      "quarter_end": "2024-12-31",
+      "casa_cr": 277190.0,
+      "casa_ratio_reported": 41.05
+    },
+    {
+      "quarter_end": "2025-03-31",
+      "casa_cr": 280284.0,
+      "casa_ratio_reported": 40.28
+    },
+    {
+      "quarter_end": "2025-06-30",
+      "casa_cr": 281846.0,
+      "casa_ratio_reported": 39.88
+    },
+    {
+      "quarter_end": "2025-09-30",
+      "casa_cr": 286492.0,
+      "casa_ratio_reported": 39.39
+    },
+    {
+      "quarter_end": "2025-12-31",
+      "casa_cr": 289620.0,
+      "casa_ratio_reported": 37.97
+    },
+    {
+      "quarter_end": "2026-03-31",
+      "casa_cr": 300765.0,
+      "casa_ratio_reported": 37.64
+    },
+    {
+      "quarter_end": "2026-06-30",
+      "casa_cr": 302085.0,
+      "casa_ratio_reported": 36.68
+    }
+  ],
+  "leaderboard": [
+    {
+      "model": "Drift",
+      "MAPE": 1.112,
+      "MASE": 0.1769,
+      "R2": 0.881
+    },
+    {
+      "model": "HoltWinters",
+      "MAPE": 1.615,
+      "MASE": 0.2588,
+      "R2": 0.7672
+    },
+    {
+      "model": "SARIMA",
+      "MAPE": 2.523,
+      "MASE": 0.4116,
+      "R2": 0.265
+    },
+    {
+      "model": "SARIMAX",
+      "MAPE": 2.523,
+      "MASE": 0.4117,
+      "R2": 0.2648
+    },
+    {
+      "model": "Prophet",
+      "MAPE": 4.629,
+      "MASE": 0.745,
+      "R2": -1.2085
+    },
+    {
+      "model": "AutoARIMA",
+      "MAPE": 5.196,
+      "MASE": 0.8485,
+      "R2": -1.9935
+    },
+    {
+      "model": "ARIMA",
+      "MAPE": 5.259,
+      "MASE": 0.8589,
+      "R2": -2.0752
+    },
+    {
+      "model": "SeasonalNaive",
+      "MAPE": 9.182,
+      "MASE": 1.4891,
+      "R2": -6.6444
+    }
+  ],
+  "transfer_mape": [
+    {
+      "model": "GlobalLGBM_FDIC",
+      "MAPE_pct": 1.3
+    },
+    {
+      "model": "Chronos2",
+      "MAPE_pct": 2.58
+    },
+    {
+      "model": "HoltWinters",
+      "MAPE_pct": 1.61
+    },
+    {
+      "model": "Drift",
+      "MAPE_pct": 1.11
+    },
+    {
+      "model": "SeasonalNaive",
+      "MAPE_pct": 9.18
+    }
+  ]
+}
