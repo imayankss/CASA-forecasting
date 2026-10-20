@@ -1,196 +1,128 @@
-# BOI CASA Deposit Forecasting System
+# CASA Deposit Forecasting: from a 40-row prototype to real data at scale
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Next.js](https://img.shields.io/badge/Next.js-Dashboard-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](web/)
-[![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)](.github/workflows/ci.yml)
-[![Tests](https://img.shields.io/badge/Tests-107_Passing-success?style=for-the-badge)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-140_Passing-success?style=for-the-badge)](tests/)
 
-CASA Intelligence Dashboard is a CASA deposit forecasting project built during a Bank of India data science internship. The Python pipeline trains and evaluates time-series models, exports its artifacts, and feeds a modern static Next.js dashboard for model comparison, risk monitoring, confidence scoring, seasonality analytics, and scenario simulation.
+This project began during a Bank of India data science internship as a CASA (Current Account + Savings Account) deposit forecaster. Bank data was confidential, so the first version ran on a **synthetic, LLM-generated** 40-quarter series. This repository now runs the same ideas on **real public data at three scales**:
 
-> **Data note: the data in this repository is synthetic.** Bank data was confidential, so `data/raw/boi_casa_deposits.csv` (40 quarters, 2015 Q1 to 2024 Q4) was generated with an LLM (ChatGPT) to resemble a bank's quarterly CASA series. `data/raw/macro_indicators.csv` was produced the same way: its values approximate public Indian figures but have not been checked against official sources. Every number in this repository describes the synthetic series, not Bank of India's actual deposits. See [`data/raw/README.md`](data/raw/README.md).
+| Track | Data | Scale | Question |
+|---|---|---|---|
+| 0. Bank of India | BOI's own quarterly results filed with NSE | 46 quarters, 2015–2026 | How well can BOI's CASA be forecast? |
+| B. US bank panel | FDIC Call Reports | 535,249 bank-quarters, 6,814 banks | Do global models beat per-bank models across thousands of banks? |
+| A. Customer lead scoring | Santander Product Recommendation (Kaggle) | 13.6M customer-months, 956,645 customers | Which customers will open a CASA-type account next month? |
 
-The Streamlit dashboard remains available in `dashboard/` as a legacy/internal demo. The portfolio product layer now lives in `web/`.
+Every headline number below is measured on later time periods than the model was trained on, against simple baselines, with an uncertainty range where the sample allows. Leakage guards in `src/evaluation/temporal.py` raise if a split or feature reaches into the future.
 
-## Results on synthetic data
+## Results
 
-Last regenerated in this workspace on June 24, 2026. These results come from the synthetic series described above.
+### Track 0: Bank of India's real CASA series
 
-| Rank | Model | MAPE | RMSE % | R2 | Adj R2 | Direction Acc | Stability | Composite |
-|---:|---|---:|---:|---:|---:|---:|---:|---:|
-| 1 | HoltWinters | 1.518% | 1.797% | 0.8061 | 0.7738 | 100.00% | 37.92 | 98.82 |
-| 2 | Prophet | 2.033% | 2.430% | 0.6457 | 0.5866 | 100.00% | 40.29 | 82.10 |
-| 3 | ARIMA | 3.214% | 4.148% | -0.0326 | -0.2047 | 71.43% | 0.00 | 18.31 |
-| 4 | SARIMAX | 3.453% | 3.885% | 0.0940 | -0.0569 | 100.00% | 0.00 | 15.58 |
-| 5 | SARIMA | 3.831% | 4.214% | -0.0658 | -0.2434 | 100.00% | 0.00 | 3.85 |
-| 6 | AutoARIMA | 3.942% | 4.351% | -0.1363 | -0.3257 | 100.00% | 0.00 | 0.00 |
+`data/real/boi_casa_quarterly.csv`: 46 quarter-ends (Mar-2015 to Jun-2026), each row cited to the NSE filing and page it came from. Holdout: 10 quarters, 2024Q1–2026Q2.
 
-Additional artifacts:
+| Model | MAPE | MASE |
+|---|---:|---:|
+| Drift (baseline) | **1.11%** | **0.18** |
+| Global LightGBM trained on 6,814 FDIC banks, applied to BOI | 1.30% | — |
+| Holt-Winters | 1.61% | 0.26 |
+| SARIMA | 2.52% | 0.41 |
+| Chronos-2 (zero-shot) | 2.58% | — |
+| Prophet | 4.63% | 0.75 |
+| Seasonal naive (baseline) | 9.18% | 1.49 |
 
-- `data/processed/model_leaderboard.csv` contains all 6 models.
-- `reports/model_registry.json` contains all 6 trained model records.
-- `data/processed/ensemble_forecast.csv` uses all 6 models with inverse-MAPE weights.
-- `web/public/data/manifest.json` reports `model_count: 6`, `best_model: HoltWinters`, and `best_mape: 1.518`.
-- Full Python test suite: `107 passed, 1 warning`.
+A straight-line drift was the hardest model to beat on BOI. The model trained only on US banks beat every BOI-fitted statistical model except that baseline.
 
-## Product Architecture
+### Track B: 6,814 US banks (FDIC Call Reports, 2001–2026)
+
+Target: transaction + savings deposits (`TRN + NTRSMMDA + NTRSOTH`), the US analogue of CASA. Backtest: 9 forecast origins (2021Q4–2023Q4), 1–4 quarters ahead, about 4,000 banks per origin (35,586 bank-origins). Failed banks such as SVB and Signature stay in the data, so there's no survivorship bias.
+
+| Model | MASE (mean) | MASE (median) |
+|---|---:|---:|
+| Naive (no change) | **1.32** | **1.06** |
+| AutoTheta | 1.68 | 1.42 |
+| AutoETS | 1.81 | 1.54 |
+| Chronos-2 (zero-shot) | 1.83 | 1.50 |
+| Global LightGBM | 1.85 | 1.55 |
+| Seasonal naive | 1.86 | 1.61 |
+
+- **Trend-following models lost to "no change".** They learned from two decades of mostly rising deposits and the 2020–21 surge, then forecast growth just as the 2022–23 rate hikes reversed deposits. In the 2023Q1 outflow quarter (−$846bn industry-wide), one-step errors for the global LightGBM rose from MASE 0.89 to 1.51.
+- **The global model ties per-bank AutoETS:** mean MASE difference +0.03, 95% CI −0.004 to +0.091 (bootstrap over banks). Its settings were chosen on 2019–2020 origins only, so the test period was never used for tuning.
+- **Sum-of-banks check:** at one quarter ahead, summed bank forecasts miss the actual total by 2.2% for Naive and 3.3–3.8% for the models.
+
+### Track A: CASA-acquisition lead scoring (Santander, 956,645 customers)
+
+Target: the customer opens a CASA-type account next month that they did not hold this month (current, particular, e-account, payroll or savings; treating these as CASA is our reading of the product list). Train on Jun-2015 to Feb-2016, validate on Mar-2016, test on Apr-2016 features with May-2016 labels. The monthly base rate is about 1%.
+
+| Evaluation | Customers | LightGBM lift @ top 10% (95% CI) | Logistic regression | Rule baseline |
+|---|---:|---:|---:|---:|
+| **Genuinely new adds** | 894,665 | **6.98 (6.86–7.11)** | 6.15 | 1.78 |
+| All adds | 926,663 | 7.77 (7.69–7.86) | 7.02 | 1.90 |
+
+37% of all adds were customers reopening an account they had held in the previous five months: easy to predict and worth little. The "genuinely new" row excludes them and is the honest headline. ROC AUC on new adds is 0.90. Kaggle states that this sample contains no real Santander customers.
+
+## What I fixed
+
+[docs/what-i-fixed.md](docs/what-i-fixed.md) has the before/after. In short:
+- **SARIMAX used future data.** It forecast with the actual macro values of the test quarters. Inputs are now lagged by the forecast horizon.
+- **ARIMA had no drift term**, so it forecast a flat line.
+- **The drift monitor compared levels of a trending series**, so it always alarmed.
+- **There were no baselines or significance tests.** Seasonal-naive and drift baselines, MASE and Diebold–Mariano tests are now included.
+
+## Data provenance
+
+| Data | Source | Real? | In git? |
+|---|---|---|---|
+| `data/raw/boi_casa_deposits.csv`, `macro_indicators.csv` | LLM-generated (ChatGPT) | **Synthetic.** Demo and test input only ([details](data/raw/README.md)) | Yes |
+| `data/real/boi_casa_quarterly.csv` | Bank of India filings on NSE, each row cited | Real, public | Yes |
+| FDIC Call Reports | `api.fdic.gov/banks/financials` | Real, public | No (`python run_panel_ingest.py`) |
+| Santander Product Recommendation | Kaggle competition data | Public sample; no real customers per Kaggle | No (competition rules forbid redistribution) |
+
+Research notes on each source are in [docs/research/](docs/research/).
+
+## Reproduce
+
+Use a native arm64 Python on Apple Silicon (PyTorch has no Intel-Mac builds).
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt -r requirements-scale.txt
+```
+
+| Step | Command |
+|---|---|
+| BOI series from filings | `.venv/bin/python run_boi_real.py` |
+| BOI forecasting | `.venv/bin/python run_pipeline.py --data data/real/boi_casa_quarterly.csv --out-dir data/processed/boi_real` |
+| FDIC download and panel build | `.venv/bin/python run_panel_ingest.py` |
+| Panel backtest | `.venv/bin/python run_panel.py`, then `--chronos-only` (Chronos runs in its own process) |
+| Transfer to BOI | `.venv/bin/python run_panel.py --transfer`, then `--transfer --chronos-only` |
+| Santander (accept the Kaggle rules first) | `kaggle competitions download -c santander-product-recommendation -p data/external/santander`, unzip, then `.venv/bin/python run_propensity.py` |
+| Dashboard data | `.venv/bin/python scripts/export_web_data.py` |
+| Tests | `.venv/bin/python -m pytest tests/` |
+
+Each run writes its config, input-file hashes and git commit next to its results (`reports/panel/summary.json`, `reports/propensity/metrics.json`).
+
+## Dashboard
+
+`web/` is a static Next.js dashboard. Every page carries a badge saying whether it shows synthetic demo data or real public data. The real-data pages are `/panel` (FDIC and BOI) and `/propensity` (Santander).
+
+```bash
+cd web && npm install && npm run dev
+```
+
+## Project structure
 
 ```text
-Raw CASA + macro CSV
-        |
-        v
-Python forecasting pipeline
-        |
-        v
-Processed CSVs + model registry + advanced monitoring outputs
-        |
-        v
-scripts/export_web_data.py
-        |
-        v
-web/public/data/*.json
-        |
-        v
-Next.js CASA Intelligence Dashboard
+src/evaluation/   metrics (MASE, Diebold-Mariano), lift with bootstrap CI, leakage guards
+src/pipelines/    single-series forecasting pipeline (BOI and synthetic)
+src/real_data/    BOI filings extraction
+src/panel/        FDIC ingest and panel build
+src/propensity/   Santander ingest, target and features
+run_*.py          entry points
+reports/          results: panel/, propensity/, and the synthetic-series reports
+web/              Next.js dashboard
 ```
 
-## Project Structure
+## Resume bullets
 
-```text
-data/
-  raw/
-  processed/
-src/
-  data_loader.py
-  pipelines/
-  evaluation/
-  advanced/
-  reporting/
-  export/web_exporter.py
-scripts/
-  export_web_data.py
-dashboard/
-  app.py                  # legacy Streamlit dashboard
-web/
-  app/                    # Next.js App Router pages
-  components/             # cards, charts, layout, dashboard components
-  lib/                    # data contract, types, formatters
-  public/data/            # generated static JSON
-reports/
-visualizations/
-tests/
-```
-
-## ML Pipeline
-
-The pipeline evaluates:
-
-- ARIMA
-- SARIMA
-- SARIMAX with real macro exogenous variables
-- AutoARIMA
-- HoltWinters
-- Prophet
-- Weighted ensemble forecasting through `run_advanced.py`
-
-Quality safeguards include chronological train/test splitting, walk-forward validation, residual diagnostics, confidence scoring, anomaly detection, drift monitoring, model registry export, and tests for train-only exogenous scaling.
-
-## Next.js Dashboard
-
-The new dashboard in `web/` is static and Vercel-ready. It does not call Python and does not duplicate model training logic.
-
-Pages:
-
-- Overview
-- Forecast
-- Models
-- Risk
-- Diagnostics
-- Seasonality
-- Scenario
-- Methodology
-
-Dashboard preview placeholders:
-
-- Overview: KPI cockpit, best model card, forecast preview, risk status.
-- Forecast: actual vs forecast chart, model selector, confidence band, forecast table.
-- Models: leaderboard, comparison charts, radar profile, recommendation.
-- Risk: confidence timeline, anomaly status, drift status.
-
-## Quick Start
-
-```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-Run the ML pipeline:
-
-```bash
-python run_pipeline.py
-python run_advanced.py
-```
-
-Generate reports:
-
-```bash
-python run_reports.py --formats html markdown --report-dir reports
-```
-
-Export static dashboard data:
-
-```bash
-python scripts/export_web_data.py
-# or
-make export-web
-```
-
-Run the Next.js dashboard:
-
-```bash
-cd web
-npm install
-npm run dev
-```
-
-Run the legacy Streamlit dashboard:
-
-```bash
-streamlit run dashboard/app.py
-```
-
-## Quality Checks
-
-```bash
-python -m pytest tests/
-python scripts/export_web_data.py
-cd web && npm run lint
-cd web && npm run build
-```
-
-Verified locally:
-
-```text
-python -m pytest tests/        -> 107 passed, 1 warning
-python scripts/export_web_data.py -> 10 JSON files generated
-cd web && npm run lint         -> passed
-cd web && npm run build        -> passed
-```
-
-## Deploy on Vercel
-
-1. Push the repository to GitHub.
-2. In Vercel, set the project root to `web/`.
-3. Use:
-   - Install command: `npm install`
-   - Build command: `npm run build`
-   - Output: Next.js default
-4. Regenerate `web/public/data/*.json` before deployment whenever the Python pipeline changes.
-
-## Resume Bullets
-
-- Built an end-to-end CASA deposit forecasting system with ARIMA, SARIMA, SARIMAX, AutoARIMA, HoltWinters, Prophet, and ensemble forecasting, developed on synthetic data because bank data was confidential.
-- Added train-only exogenous scaling safeguards to reduce data leakage risk in SARIMAX forecasting.
-- Created a static JSON export layer that decouples Python ML artifacts from a modern Next.js analytics dashboard.
-- Designed a recruiter-ready banking intelligence dashboard with model leaderboard, forecast explorer, confidence timeline, drift status, and scenario simulator.
-- Validated the project with 107 Python tests plus Next.js lint and production build checks.
+- Rebuilt a Bank of India CASA forecasting pipeline on 46 quarters of BOI's published CASA figures. Found and removed a look-ahead leak; a drift baseline led at 1.11% MAPE on a 10-quarter holdout, and a model trained on 6,814 US banks reached 1.30%, beating Holt-Winters (1.61%).
+- Scaled deposit forecasting to 6,814 US banks (535k FDIC bank-quarters, 2001–2026) with statistical, global LightGBM and Chronos-2 models over 9 backtest origins. Showed that trend models lost to a no-change forecast through the 2022–23 deposit outflows (MASE 1.32 vs 1.68–1.85).
+- Built CASA-acquisition lead scoring on Santander's public 13.6M-row, 957k-customer dataset. Achieved top-decile lift of 6.98 (95% CI 6.86–7.11) on genuinely new account openings, measured on a later month than training, vs 6.15 for logistic regression.
