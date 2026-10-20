@@ -76,6 +76,57 @@ def _month_number() -> pl.Expr:
             + pl.col("fecha_dato").dt.month().cast(pl.Int32)).alias("mnum")
 
 
+FEATURES_PARQUET = RAW_DIR / "features.parquet"
+DEMOGRAPHICS = [
+    "age", "antiguedad", "renta", "ind_actividad_cliente", "ind_nuevo", "indrel", "cod_prov",
+    "segmento", "sexo", "canal_entrada", "tiprel_1mes", "indrel_1mes", "ind_empleado",
+    "indext", "indresi",
+]
+CASA_LAGS = range(2, 6)
+
+
+def build_features(lf: pl.LazyFrame, first_month: str = "2015-06-28",
+                   out_path: Path = FEATURES_PARQUET) -> Path:
+    """Feature table dated at month t, using only data from t and earlier.
+
+    Every lag is a join on mnum + k with k >= 1, so no feature can come from
+    after t. Joined with casa_targets, so each row carries its t+1 label.
+    """
+    flags = lf.select("ncodpers", _month_number(),
+                      *[pl.col(c).fill_null(0).cast(pl.Int8) for c in PRODUCTS])
+
+    def lagged(k: int, cols):
+        return flags.select("ncodpers", (pl.col("mnum") + k).alias("mnum"),
+                            *[pl.col(c).alias(f"{c}_l{k}") for c in cols])
+
+    base = (
+        lf.filter(pl.col("fecha_dato") >= pl.lit(first_month).str.to_date())
+        .select("ncodpers", "fecha_dato", _month_number(), *DEMOGRAPHICS,
+                *[pl.col(c).fill_null(0).cast(pl.Int8) for c in PRODUCTS])
+        .with_columns(
+            pl.col("renta").is_null().cast(pl.Int8).alias("renta_missing"),
+            ((pl.col("fecha_dato").dt.month() % 12) + 1).cast(pl.Int8).alias("label_month"),
+        )
+    )
+    feats = base.join(lagged(1, PRODUCTS), on=["ncodpers", "mnum"], how="left")
+    for k in CASA_LAGS:
+        feats = feats.join(lagged(k, CASA_PRODUCTS), on=["ncodpers", "mnum"], how="left")
+
+    n_now = pl.sum_horizontal(PRODUCTS)
+    n_prev = pl.sum_horizontal([pl.col(f"{c}_l1").fill_null(0) for c in PRODUCTS])
+    adds_last = pl.sum_horizontal(
+        [((pl.col(c) == 1) & (pl.col(f"{c}_l1").fill_null(0) == 0)).cast(pl.Int8) for c in PRODUCTS])
+    feats = feats.with_columns(
+        n_now.cast(pl.Int8).alias("n_products"),
+        (n_now - n_prev).cast(pl.Int8).alias("n_products_change"),
+        adds_last.cast(pl.Int8).alias("n_added_last_month"),
+        pl.col("ind_cco_fin_ult1_l1").is_null().cast(pl.Int8).alias("new_customer"),
+    )
+    targets = casa_targets(lf).select("ncodpers", "fecha_dato", "casa_add")
+    feats.join(targets, on=["ncodpers", "fecha_dato"], how="inner").drop("mnum").sink_parquet(out_path)
+    return out_path
+
+
 def casa_targets(lf: pl.LazyFrame) -> pl.LazyFrame:
     """casa_add = 1 if the customer holds a CASA product at t+1 they did not hold at t.
 
