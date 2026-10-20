@@ -96,3 +96,32 @@ class ModelRegistry:
             row.update({k: round(v, 4) for k, v in rec.metrics.items()})
             rows.append(row)
         return pd.DataFrame(rows).set_index("Model")
+
+
+def run_metadata(config: Dict, data_files: List[str]) -> Dict:
+    """Provenance for one run: config, input file sizes and hashes, git commit."""
+    import hashlib
+    import subprocess
+    from datetime import datetime
+    from pathlib import Path
+
+    def sha256(path: str) -> str:
+        h = hashlib.sha256()
+        with open(path, "rb") as f:
+            for chunk in iter(lambda: f.read(1 << 20), b""):
+                h.update(chunk)
+        return h.hexdigest()
+
+    try:
+        git_sha = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
+                                 text=True, check=True).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        git_sha = None
+    return {
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "git_sha": git_sha,
+        "config": config,
+        "data_snapshot": [
+            {"path": p, "bytes": Path(p).stat().st_size, "sha256": sha256(p)} for p in data_files
+        ],
+    }

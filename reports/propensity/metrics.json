@@ -1,0 +1,120 @@
+{
+  "base_rate_test": 0.01027,
+  "test_customers": 926663,
+  "test_adds": 9514,
+  "models": {
+    "rule_active_x_products": {
+      "lift_at_10pct": 1.896,
+      "lift_at_10pct_ci95": [
+        1.817,
+        1.974
+      ],
+      "lift_at_5pct": 1.543,
+      "lift_at_1pct": 1.041,
+      "roc_auc": 0.6417,
+      "pr_auc": 0.0167
+    },
+    "logistic_regression": {
+      "lift_at_10pct": 7.018,
+      "lift_at_10pct_ci95": [
+        6.923,
+        7.105
+      ],
+      "lift_at_5pct": 12.642,
+      "lift_at_1pct": 41.506,
+      "roc_auc": 0.8897,
+      "pr_auc": 0.3174,
+      "brier": 0.00819
+    },
+    "lightgbm": {
+      "lift_at_10pct": 7.771,
+      "lift_at_10pct_ci95": [
+        7.687,
+        7.857
+      ],
+      "lift_at_5pct": 13.967,
+      "lift_at_1pct": 48.884,
+      "roc_auc": 0.9265,
+      "pr_auc": 0.4509,
+      "brier": 0.00717,
+      "best_iteration": 843
+    }
+  },
+  "new_adds_only": {
+    "customers": 894665,
+    "adds": 5949,
+    "base_rate": 0.00665,
+    "share_of_adds_excluded": 0.3747,
+    "models": {
+      "rule_active_x_products": {
+        "lift_at_10pct": 1.784,
+        "lift_at_10pct_ci95": [
+          1.687,
+          1.882
+        ],
+        "lift_at_5pct": 1.278,
+        "lift_at_1pct": 0.891,
+        "roc_auc": 0.6079,
+        "pr_auc": 0.01
+      },
+      "logistic_regression": {
+        "lift_at_10pct": 6.149,
+        "lift_at_10pct_ci95": [
+          6.033,
+          6.274
+        ],
+        "lift_at_5pct": 10.694,
+        "lift_at_1pct": 39.837,
+        "roc_auc": 0.8552,
+        "pr_auc": 0.2355,
+        "brier": 0.00575
+      },
+      "lightgbm": {
+        "lift_at_10pct": 6.978,
+        "lift_at_10pct_ci95": [
+          6.863,
+          7.106
+        ],
+        "lift_at_5pct": 12.049,
+        "lift_at_1pct": 45.3,
+        "roc_auc": 0.8999,
+        "pr_auc": 0.3752,
+        "brier": 0.00497
+      }
+    }
+  },
+  "run": {
+    "timestamp": "2026-10-21T00:46:39",
+    "git_sha": "f80d3237fa64d7f46050061c67f24a95e6a5e8b7",
+    "config": {
+      "train_months": [
+        "2015-06-28",
+        "2016-02-28"
+      ],
+      "val_month": "2016-03-28",
+      "test_month": "2016-04-28",
+      "neg_sample": 0.1,
+      "lgb_params": {
+        "objective": "binary",
+        "learning_rate": 0.05,
+        "num_leaves": 63,
+        "min_child_samples": 200,
+        "feature_fraction": 0.8,
+        "bagging_fraction": 0.8,
+        "bagging_freq": 1,
+        "lambda_l2": 1.0,
+        "verbose": -1,
+        "seed": 42,
+        "num_threads": 6
+      },
+      "n_features": 96
+    },
+    "data_snapshot": [
+      {
+        "path": "data/external/santander/features.parquet",
+        "bytes": 146267854,
+        "sha256": "cfc440292e50bdcaddc53e5991d89f02938d319805ae9f7a2c0e45506b803f3d"
+      }
+    ]
+  }
+}
