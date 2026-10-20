@@ -34,6 +34,7 @@ from src.config import (
 from src.data_loader import load_casa_data, get_train_test, scale_exog_train_test
 from src.evaluation.metrics import compute_full_metrics
 from src.evaluation.diagnostics import run_full_diagnostics
+from src.evaluation.temporal import assert_features_known_at
 from src.evaluation.comparison import ModelComparison
 from src.forecasting.registry import ModelRegistry, ModelRecord
 from src.utils import get_logger
@@ -50,10 +51,10 @@ SARIMAX_EXOG_COLS = ["RBI_Repo_Rate", "CPI_Inflation", "GDP_Growth_Rate"]
 # ─────────────────────────────────────────────────────────────
 
 def _fit_arima(train: pd.Series, test: pd.Series, df: Optional[pd.DataFrame] = None) -> Dict:
-    """ARIMA(1,1,0) — parsimonious, fewer params than (1,1,1) on 30 points."""
+    """ARIMA(1,1,0) with drift — without a trend term the forecast is a flat line."""
     from statsmodels.tsa.arima.model import ARIMA
     train_log = np.log(train.replace(0, np.nan)).dropna()
-    m = ARIMA(train_log, order=(1, 1, 0)).fit()
+    m = ARIMA(train_log, order=(1, 1, 0), trend="t").fit()
     fitted = np.exp(m.fittedvalues)
     fc_obj = m.get_forecast(steps=len(test))
     fc = np.exp(fc_obj.predicted_mean)
@@ -68,7 +69,7 @@ def _fit_arima(train: pd.Series, test: pd.Series, df: Optional[pd.DataFrame] = N
     return dict(
         forecast=fc, ci=ci_df, fitted=fitted, residuals=res,
         metrics=compute_full_metrics(test.values, fc.values, res),
-        params={"order": "(1,1,0)"},
+        params={"order": "(1,1,0)", "trend": "drift"},
     )
 
 
@@ -104,8 +105,9 @@ def _fit_sarima(train: pd.Series, test: pd.Series, df: Optional[pd.DataFrame] = 
 def _fit_sarimax(train: pd.Series, test: pd.Series, df: Optional[pd.DataFrame] = None) -> Dict:
     """SARIMAX(1,1,1)(0,1,1,4) with REAL macro exogenous variables.
 
-    Exog: RBI_Repo_Rate, CPI_Inflation, GDP_Growth_Rate.
-    Scaler is fit on train portion only (no data leakage).
+    Exog: RBI_Repo_Rate, CPI_Inflation, GDP_Growth_Rate, lagged by the full
+    forecast horizon so every value used is already known at the forecast
+    origin (no look-ahead). Scaler is fit on the train portion only.
     Falls back to SARIMA (no exog) if macro data is unavailable.
     """
     import statsmodels.api as sm
@@ -117,9 +119,17 @@ def _fit_sarimax(train: pd.Series, test: pd.Series, df: Optional[pd.DataFrame] =
     exog_test  = None
     exog_feature_count = 0
 
+    exog_lag = len(test)
     if df is not None:
+        exog_cols = [c for c in SARIMAX_EXOG_COLS if c in df.columns]
+        lagged = df.copy()
+        lagged[exog_cols] = df[exog_cols].shift(exog_lag)
+        known_at = pd.Series(df.index, index=df.index).shift(exog_lag).reindex(test.index)
+        assert_features_known_at(
+            pd.DataFrame({"known_at": known_at}), origin=train.index.max(), time_col="known_at"
+        )
         train_exog, test_exog, _ = scale_exog_train_test(
-            df=df,
+            df=lagged,
             train_index=train.index,
             test_index=test.index,
             exog_cols=SARIMAX_EXOG_COLS,
@@ -153,7 +163,8 @@ def _fit_sarimax(train: pd.Series, test: pd.Series, df: Optional[pd.DataFrame] =
     return dict(
         forecast=fc, ci=ci_df, fitted=fitted, residuals=res,
         metrics=compute_full_metrics(test.values, fc.values, res, n_features=exog_feature_count),
-        params={"order": "(1,1,1)", "seasonal_order": "(0,1,1,4)", "exog": str(exog_label)},
+        params={"order": "(1,1,1)", "seasonal_order": "(0,1,1,4)", "exog": str(exog_label),
+                "exog_lag_quarters": exog_lag},
     )
 
 
