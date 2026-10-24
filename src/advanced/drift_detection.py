@@ -119,11 +119,19 @@ class DriftDetector:
     # ── Individual tests ──────────────────────────────────────────────────
 
     def _ks_test(self, live_series: pd.Series) -> Tuple[float, float, bool]:
-        """KS test: compare live deposit distribution vs training distribution."""
-        ks_stat, ks_p = stats.ks_2samp(
-            self.train_series.dropna().values,
-            live_series.dropna().values,
-        )
+        """KS test on quarter-on-quarter log growth, train vs live.
+
+        Comparing levels of a trending series always flags drift, so the test
+        compares growth rates instead. The last training value is prepended to
+        the live series so its first growth step (train -> live) is counted and
+        a single live observation still yields one growth value.
+        """
+        def growth(s: pd.Series) -> np.ndarray:
+            return np.log(s.dropna()).diff().dropna().values
+
+        train = self.train_series.dropna()
+        live = pd.concat([train.iloc[-1:], live_series.dropna()])
+        ks_stat, ks_p = stats.ks_2samp(growth(train), growth(live))
         return float(ks_stat), float(ks_p), bool(ks_p < self.ks_alpha)
 
     def _cusum_test(self, live_residuals: np.ndarray) -> Tuple[bool, float]:

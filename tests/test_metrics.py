@@ -119,3 +119,31 @@ class TestComputeFullMetrics:
     def test_mape_range(self):
         m = compute_full_metrics(ACTUAL, PRED)
         assert 0 <= m["MAPE"] < 100
+
+
+class TestMASE:
+    def test_hand_computed(self):
+        from src.evaluation.metrics import mase
+        y_train = np.arange(1, 9, dtype=float)      # seasonal-naive errors are all 4
+        y_true = np.array([9.0, 10.0])
+        y_pred = np.array([11.0, 10.0])             # MAE = 1
+        assert mase(y_true, y_pred, y_train, m=4) == pytest.approx(0.25)
+
+    def test_too_short_train_is_nan(self):
+        from src.evaluation.metrics import mase
+        assert np.isnan(mase(np.array([1.0]), np.array([1.0]), np.array([1.0, 2.0]), m=4))
+
+
+class TestDieboldMariano:
+    def test_identical_errors(self):
+        from src.evaluation.metrics import diebold_mariano
+        e = np.array([0.5, -0.2, 0.3, -0.1, 0.4])
+        stat, p = diebold_mariano(e, e)
+        assert stat == 0.0 and p == 1.0
+
+    def test_clearly_better_model(self):
+        from src.evaluation.metrics import diebold_mariano
+        e1 = np.array([0.1, -0.1] * 10)
+        e2 = np.array([1.0, -1.2] * 10)
+        stat, p = diebold_mariano(e1, e2)
+        assert stat < 0 and p < 0.05

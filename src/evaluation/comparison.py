@@ -10,7 +10,9 @@ from datetime import datetime
 import numpy as np
 import pandas as pd
 
-from src.evaluation.metrics import compute_full_metrics, composite_score, SCORE_WEIGHTS
+from src.evaluation.metrics import (
+    compute_full_metrics, composite_score, SCORE_WEIGHTS, mase, diebold_mariano
+)
 
 warnings.filterwarnings("ignore")
 
@@ -41,9 +43,12 @@ class ModelComparison:
         residuals:  np.ndarray,
         train_time: float = 0.0,
         extra:      Optional[Dict] = None,
+        y_train:    Optional[np.ndarray] = None,
     ) -> None:
-        """Register a model result."""
+        """Register a model result. Pass y_train to add MASE (season length 4)."""
         metrics = compute_full_metrics(actual, predicted, residuals)
+        if y_train is not None:
+            metrics["MASE"] = round(mase(actual, predicted, y_train, m=4), 4)
         self._records[model_name] = {
             "metrics":    metrics,
             "actual":     np.array(actual,    dtype=float),
@@ -81,6 +86,25 @@ class ModelComparison:
         mdf.insert(0, "Rank", range(1, len(mdf) + 1))
         mdf["Recommended"] = mdf.index == mdf.index[0]
         return mdf
+
+    def dm_table(self, baseline: str = "SeasonalNaive") -> pd.DataFrame:
+        """Diebold-Mariano test of each model against a baseline on test errors.
+
+        With only a handful of test points the test has little power; report it
+        so differences are not over-read.
+        """
+        if baseline not in self._records:
+            return pd.DataFrame()
+        base = self._records[baseline]
+        e_base = base["actual"] - base["predicted"]
+        rows = {}
+        for name, rec in self._records.items():
+            if name == baseline:
+                continue
+            stat, p = diebold_mariano(rec["actual"] - rec["predicted"], e_base)
+            rows[name] = {"DM_stat": round(stat, 3), "p_value": round(p, 4),
+                          "significant_5pct": bool(p < 0.05), "n_test": len(e_base)}
+        return pd.DataFrame(rows).T
 
     # ── Key models ───────────────────────────────────────────────────────
 
