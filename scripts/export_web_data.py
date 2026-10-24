@@ -1,4 +1,4 @@
-"""CLI wrapper for exporting static JSON used by the Next.js dashboard."""
+"""CLI wrapper for exporting the real-data results JSON used by the Next.js dashboard."""
 
 from __future__ import annotations
 
@@ -23,7 +23,8 @@ def main() -> None:
     args = parser.parse_args()
 
     exporter = WebDataExporter(root_dir=args.root_dir, output_dir=args.output_dir)
-    generated = exporter.export_all() + exporter.export_real_data()
+    # The dashboard shows real-data results only; export_all() (synthetic series) stays for its tests.
+    generated = exporter.export_real_data()
     print(f"\nGenerated {len(generated)} web data files.")
 
 
