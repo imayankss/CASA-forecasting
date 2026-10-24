@@ -112,12 +112,12 @@ class TestModelRegistry:
 
 class TestSaveResults:
     def test_save_creates_files(self, pipeline, tmp_path):
-        saved = pipeline.save_results(out_dir=str(tmp_path))
+        saved = pipeline.save_results(out_dir=str(tmp_path), registry_path=str(tmp_path / "model_registry.json"))
         assert "leaderboard" in saved
         assert Path(saved["leaderboard"]).exists()
 
     def test_forecasts_csv_exists(self, pipeline, tmp_path):
-        saved = pipeline.save_results(out_dir=str(tmp_path))
+        saved = pipeline.save_results(out_dir=str(tmp_path), registry_path=str(tmp_path / "model_registry.json"))
         assert Path(saved["forecasts"]).exists()
 
 

@@ -1,25 +1,25 @@
-# CASA Intelligence Dashboard
+# Results dashboard
 
-Modern static dashboard for the BOI CASA Deposit Forecasting System.
+A single static page (Next.js) that shows the committed results of the three real-data tracks: Bank of India, the FDIC bank panel and Santander lead scoring. Live at https://casa-forecasting.vercel.app.
+
+Every control switches between measured results read from `public/data/*.json`; nothing is recomputed in the browser.
 
 ## Run
 
 ```bash
-cd ..
-python scripts/export_web_data.py
-
+python scripts/export_web_data.py   # from the repo root: rebuild the JSON from reports/ and data/
 cd web
 npm install
 npm run dev
 ```
 
-## Build
+## Check
 
 ```bash
-cd web
 npm run lint
 npm run build
 ```
 
-The app reads exported JSON from `web/public/data/` and does not call Python or a backend API.
+## Deploy
 
+Vercel project with root directory `web`; every push to `main` redeploys.
