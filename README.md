@@ -3,8 +3,11 @@
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Next.js](https://img.shields.io/badge/Next.js-Dashboard-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](web/)
 [![Tests](https://img.shields.io/badge/Tests-142_Passing-success?style=for-the-badge)](tests/)
+[![Live dashboard](https://img.shields.io/badge/Live-casa--forecasting.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://casa-forecasting.vercel.app)
 
-[![Results dashboard: headline numbers for Bank of India, 6,814 US banks and 957k customers](docs/assets/dashboard.png)](web/)
+**Live results dashboard: [casa-forecasting.vercel.app](https://casa-forecasting.vercel.app)**
+
+[![Results dashboard: headline numbers for Bank of India, 6,814 US banks and 957k customers](docs/assets/dashboard.png)](https://casa-forecasting.vercel.app)
 
 This project began during a Bank of India data science internship as a CASA (Current Account + Savings Account) deposit forecaster. Bank data was confidential, so the first version ran on a **synthetic, LLM-generated** 40-quarter series. This repository now runs the same ideas on **real public data at three scales**:
 
