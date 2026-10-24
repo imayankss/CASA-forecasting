@@ -558,8 +558,8 @@ class ForecastingPipeline:
 
     # ── Export ────────────────────────────────────────────────────────────
 
-    def save_results(self, out_dir: Optional[str] = None) -> Dict[str, str]:
-        """Export all results CSVs and the registry JSON."""
+    def save_results(self, out_dir: Optional[str] = None, registry_path: Optional[str] = None) -> Dict[str, str]:
+        """Export all results CSVs and the registry JSON (default: reports/model_registry.json)."""
         from pathlib import Path as _Path
         out = _Path(out_dir or PROCESSED_DATA_DIR)
         out.mkdir(parents=True, exist_ok=True)
@@ -595,7 +595,7 @@ class ForecastingPipeline:
             cv_df.to_csv(cv_path)
             saved["cv_summary"] = cv_path
 
-        reg_path = str(_Path(REPORTS_DIR) / "model_registry.json")
+        reg_path = registry_path or str(_Path(REPORTS_DIR) / "model_registry.json")
         self.registry.save_index(reg_path)
         saved["registry"] = reg_path
 
