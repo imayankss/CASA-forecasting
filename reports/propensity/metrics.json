@@ -85,7 +85,7 @@
   },
   "run": {
     "timestamp": "2026-10-21T00:46:39",
-    "git_sha": "f80d3237fa64d7f46050061c67f24a95e6a5e8b7",
+    "git_sha": "66f56117680bfd87d005cd71129704ea1b2f9751",
     "config": {
       "train_months": [
         "2015-06-28",

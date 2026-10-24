@@ -112,14 +112,20 @@ def run_metadata(config: Dict, data_files: List[str]) -> Dict:
                 h.update(chunk)
         return h.hexdigest()
 
+    def git(*args: str) -> str:
+        return subprocess.run(["git", *args], capture_output=True, text=True, check=True,
+                              cwd=Path(__file__).resolve().parents[2]).stdout.strip()
+
     try:
-        git_sha = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
-                                 text=True, check=True).stdout.strip()
+        git_sha = git("rev-parse", "HEAD")
+        # Uncommitted tracked changes mean git_sha is not the code that produced this run
+        git_dirty = bool(git("status", "--porcelain", "--untracked-files=no"))
     except (OSError, subprocess.CalledProcessError):
-        git_sha = None
+        git_sha, git_dirty = None, None
     return {
         "timestamp": datetime.now().isoformat(timespec="seconds"),
         "git_sha": git_sha,
+        "git_dirty": git_dirty,
         "config": config,
         "data_snapshot": [
             {"path": p, "bytes": Path(p).stat().st_size, "sha256": sha256(p)} for p in data_files
