@@ -23,3 +23,4 @@ def test_round_trip(tmp_path):
     assert snap["bytes"] == data.stat().st_size
     assert snap["sha256"] == hashlib.sha256(data.read_bytes()).hexdigest()
     assert "git_sha" in back and "timestamp" in back
+    assert back["git_dirty"] in (True, False, None)

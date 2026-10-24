@@ -265,13 +265,23 @@ def main() -> None:
     tag = "chronos" if args.chronos_only else "main"
     if not args.validation:
         errors.to_parquet(ERRORS[tag])
+    chronos_merged = args.chronos_only
     if args.validation:
         pass
     elif ERRORS["main"].exists() and ERRORS["chronos"].exists():
         main_e = pd.read_parquet(ERRORS["main"])
         chron = pd.read_parquet(ERRORS["chronos"])
-        errors = main_e.merge(chron.drop(columns=["actual", "scale"]), on=["unique_id", "ds", "h", "origin"])
-        logger.info(f"merged with saved {'main' if args.chronos_only else 'chronos'} run: {len(errors):,} rows")
+        # Merge only runs that scored the same bank-origins; a stale or sampled run would
+        # silently shrink every model's leaderboard row through the inner join.
+        def bank_origins(e):
+            return e.set_index(["unique_id", "origin"]).index.unique().sort_values()
+        if bank_origins(main_e).equals(bank_origins(chron)):
+            errors = main_e.merge(chron.drop(columns=["actual", "scale"]), on=["unique_id", "ds", "h", "origin"])
+            chronos_merged = True
+            logger.info(f"merged with saved {'main' if args.chronos_only else 'chronos'} run: {len(errors):,} rows")
+        else:
+            logger.warning("saved main and chronos runs scored different bank-origins (stale file, other "
+                           "settings or --chronos-sample); reporting this run alone. Re-run the other one to merge.")
     elif args.chronos_only:
         logger.info("no saved main run to merge with")
     table, mase = summarise(errors)
@@ -301,7 +311,7 @@ def main() -> None:
         "chronos_sample_banks_per_origin": args.chronos_sample or None,
         "seconds_per_origin": {k: round(float(np.mean(v)), 1) for k, v in timings.items()},
         "run": run_metadata({"origins": len(ORIGINS[: args.origins]), "h": H, "models": args.models,
-                             "chronos": ERRORS["chronos"].exists(), "min_history": MIN_HISTORY,
+                             "chronos": chronos_merged, "min_history": MIN_HISTORY,
                              "lgbm_objective": args.objective},
                             [str(PANEL.relative_to(ROOT))]),
     }
