@@ -1,5 +1,4 @@
-# CASA Deposit Forecasting: from a 40-row prototype to real data at scale
-
+# CASA Deposit Forecasting: 
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
 [![Next.js](https://img.shields.io/badge/Next.js-Dashboard-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](web/)
 [![Tests](https://img.shields.io/badge/Tests-142_Passing-success?style=for-the-badge)](tests/)
