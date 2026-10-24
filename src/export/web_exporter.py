@@ -67,7 +67,7 @@ class WebDataExporter:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         payloads = {
             "boi_real.json": self._boi_real_payload(),
-            "panel.json": self._read_json("reports/panel/summary.json"),
+            "panel.json": self._panel_payload(),
             "propensity.json": self._propensity_payload(),
         }
         written = []
@@ -91,7 +91,14 @@ class WebDataExporter:
             "leaderboard": board[["model", "MAPE", "MASE", "R2"]].sort_values("MASE").round(4).to_dict("records"),
             "transfer_mape": transfer.rename(columns={transfer.columns[0]: "model"}).to_dict("records")
                 if not transfer.empty else [],
+            "forecasts": self._read_csv("reports/panel/boi_transfer_forecasts.csv").to_dict("records"),
         }
+
+    def _panel_payload(self) -> Dict[str, Any]:
+        summary = self._read_json("reports/panel/summary.json")
+        if summary:
+            summary["mase_by_origin"] = self._read_csv("reports/panel/mase_by_origin.csv").to_dict("records")
+        return summary
 
     def _propensity_payload(self) -> Dict[str, Any]:
         metrics = self._read_json("reports/propensity/metrics.json")

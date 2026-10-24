@@ -302,5 +302,97 @@
       "model": "SeasonalNaive",
       "MAPE_pct": 9.18
     }
+  ],
+  "forecasts": [
+    {
+      "ds": "2024-03-31",
+      "GlobalLGBM_FDIC": 269169.0,
+      "actual": 269872.0,
+      "Chronos2": 268897.0,
+      "HoltWinters": 267611.0,
+      "Drift": 265534.0,
+      "SeasonalNaive": 252149.0
+    },
+    {
+      "ds": "2024-06-30",
+      "GlobalLGBM_FDIC": 272372.0,
+      "actual": 274973.0,
+      "Chronos2": 273662.0,
+      "HoltWinters": 270113.0,
+      "Drift": 269732.0,
+      "SeasonalNaive": 260615.0
+    },
+    {
+      "ds": "2024-09-30",
+      "GlobalLGBM_FDIC": 272744.0,
+      "actual": 275618.0,
+      "Chronos2": 278099.0,
+      "HoltWinters": 270768.0,
+      "Drift": 273931.0,
+      "SeasonalNaive": 256956.0
+    },
+    {
+      "ds": "2024-12-31",
+      "GlobalLGBM_FDIC": 277901.0,
+      "actual": 277190.0,
+      "Chronos2": 283714.0,
+      "HoltWinters": 280338.0,
+      "Drift": 278129.0,
+      "SeasonalNaive": 261335.0
+    },
+    {
+      "ds": "2025-03-31",
+      "GlobalLGBM_FDIC": 284838.0,
+      "actual": 280284.0,
+      "Chronos2": 288365.0,
+      "HoltWinters": 285771.0,
+      "Drift": 282328.0,
+      "SeasonalNaive": 252149.0
+    },
+    {
+      "ds": "2025-06-30",
+      "GlobalLGBM_FDIC": 289676.0,
+      "actual": 281846.0,
+      "Chronos2": 292714.0,
+      "HoltWinters": 288273.0,
+      "Drift": 286526.0,
+      "SeasonalNaive": 260615.0
+    },
+    {
+      "ds": "2025-09-30",
+      "GlobalLGBM_FDIC": 290945.0,
+      "actual": 286492.0,
+      "Chronos2": 298215.0,
+      "HoltWinters": 288928.0,
+      "Drift": 290725.0,
+      "SeasonalNaive": 256956.0
+    },
+    {
+      "ds": "2025-12-31",
+      "GlobalLGBM_FDIC": 296129.0,
+      "actual": 289620.0,
+      "Chronos2": 303434.0,
+      "HoltWinters": 298498.0,
+      "Drift": 294923.0,
+      "SeasonalNaive": 261335.0
+    },
+    {
+      "ds": "2026-03-31",
+      "GlobalLGBM_FDIC": 303089.0,
+      "actual": 300765.0,
+      "Chronos2": 308708.0,
+      "HoltWinters": 303931.0,
+      "Drift": 299122.0,
+      "SeasonalNaive": 252149.0
+    },
+    {
+      "ds": "2026-06-30",
+      "GlobalLGBM_FDIC": 306585.0,
+      "actual": 302085.0,
+      "Chronos2": 312565.0,
+      "HoltWinters": 306433.0,
+      "Drift": 303320.0,
+      "SeasonalNaive": 260615.0
+    }
   ]
 }
