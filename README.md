@@ -4,6 +4,8 @@
 [![Next.js](https://img.shields.io/badge/Next.js-Dashboard-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](web/)
 [![Tests](https://img.shields.io/badge/Tests-142_Passing-success?style=for-the-badge)](tests/)
 
+[![Results dashboard: headline numbers for Bank of India, 6,814 US banks and 957k customers](docs/assets/dashboard.png)](web/)
+
 This project began during a Bank of India data science internship as a CASA (Current Account + Savings Account) deposit forecaster. Bank data was confidential, so the first version ran on a **synthetic, LLM-generated** 40-quarter series. This repository now runs the same ideas on **real public data at three scales**:
 
 | Track | Data | Scale | Question |
@@ -102,7 +104,7 @@ Each run writes its config, input-file hashes and git commit next to its results
 
 ## Dashboard
 
-`web/` is a static Next.js dashboard. Every page carries a badge saying whether it shows synthetic demo data or real public data. The real-data pages are `/panel` (FDIC and BOI) and `/propensity` (Santander).
+`web/` is a single static results page (Next.js): the three tracks' headline numbers, an interactive chart per track (BOI forecast explorer, panel MASE by origin, lead-scoring call-capacity frontier), the evaluation protocol and how to reproduce. It shows committed results only; nothing is recomputed in the browser.
 
 ```bash
 cd web && npm install && npm run dev
