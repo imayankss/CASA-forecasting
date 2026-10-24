@@ -9,8 +9,8 @@
     "adjusted_r2": 0.7738,
     "direction_accuracy": 100.0,
     "stability": 37.92,
-    "composite_score": 98.82,
-    "train_time_s": 0.03,
+    "composite_score": 88.92,
+    "train_time_s": 0.02,
     "recommended": true,
     "badges": [
       "Production Candidate",
@@ -25,28 +25,26 @@
     "rmse_pct": 2.43,
     "mae_pct": 2.021,
     "r2": 0.6457,
-    "adjusted_r2": 0.5866,
+    "adjusted_r2": 0.5867,
     "direction_accuracy": 100.0,
     "stability": 40.29,
-    "composite_score": 82.1,
-    "train_time_s": 0.46,
+    "composite_score": 81.63,
+    "train_time_s": 2.76,
     "recommended": false,
-    "badges": [
-      "Fastest"
-    ]
+    "badges": []
   },
   {
     "rank": 3,
-    "model": "ARIMA",
-    "mape": 3.214,
-    "rmse_pct": 4.148,
-    "mae_pct": 3.243,
-    "r2": -0.0326,
-    "adjusted_r2": -0.2047,
-    "direction_accuracy": 71.43,
+    "model": "SARIMAX",
+    "mape": 3.646,
+    "rmse_pct": 3.842,
+    "mae_pct": 3.621,
+    "r2": 0.1142,
+    "adjusted_r2": -0.0335,
+    "direction_accuracy": 100.0,
     "stability": 0.0,
-    "composite_score": 18.31,
-    "train_time_s": 0.26,
+    "composite_score": 50.16,
+    "train_time_s": 0.08,
     "recommended": false,
     "badges": [
       "Fastest"
@@ -54,23 +52,6 @@
   },
   {
     "rank": 4,
-    "model": "SARIMAX",
-    "mape": 3.453,
-    "rmse_pct": 3.885,
-    "mae_pct": 3.471,
-    "r2": 0.094,
-    "adjusted_r2": -0.0569,
-    "direction_accuracy": 100.0,
-    "stability": 0.0,
-    "composite_score": 15.58,
-    "train_time_s": 0.07,
-    "recommended": false,
-    "badges": [
-      "Fastest"
-    ]
-  },
-  {
-    "rank": 5,
     "model": "SARIMA",
     "mape": 3.831,
     "rmse_pct": 4.214,
@@ -79,7 +60,7 @@
     "adjusted_r2": -0.2434,
     "direction_accuracy": 100.0,
     "stability": 0.0,
-    "composite_score": 3.85,
+    "composite_score": 46.59,
     "train_time_s": 0.23,
     "recommended": false,
     "badges": [
@@ -87,7 +68,7 @@
     ]
   },
   {
-    "rank": 6,
+    "rank": 5,
     "model": "AutoARIMA",
     "mape": 3.942,
     "rmse_pct": 4.351,
@@ -96,9 +77,64 @@
     "adjusted_r2": -0.3257,
     "direction_accuracy": 100.0,
     "stability": 0.0,
-    "composite_score": 0.0,
-    "train_time_s": 1.46,
+    "composite_score": 44.9,
+    "train_time_s": 5.32,
     "recommended": false,
     "badges": []
+  },
+  {
+    "rank": 6,
+    "model": "Drift",
+    "mape": 5.304,
+    "rmse_pct": 5.97,
+    "mae_pct": 5.221,
+    "r2": -1.1391,
+    "adjusted_r2": -1.4956,
+    "direction_accuracy": 71.43,
+    "stability": 38.58,
+    "composite_score": 33.91,
+    "train_time_s": 0.0,
+    "recommended": false,
+    "badges": [
+      "Fastest",
+      "Risky"
+    ]
+  },
+  {
+    "rank": 7,
+    "model": "SeasonalNaive",
+    "mape": 7.025,
+    "rmse_pct": 7.675,
+    "mae_pct": 7.074,
+    "r2": -2.5353,
+    "adjusted_r2": -3.1245,
+    "direction_accuracy": 85.71,
+    "stability": 85.01,
+    "composite_score": 20.0,
+    "train_time_s": 0.0,
+    "recommended": false,
+    "badges": [
+      "Most Stable",
+      "Fastest",
+      "Risky"
+    ]
+  },
+  {
+    "rank": 8,
+    "model": "ARIMA",
+    "mape": 6.696,
+    "rmse_pct": 7.431,
+    "mae_pct": 6.648,
+    "r2": -2.3141,
+    "adjusted_r2": -2.8664,
+    "direction_accuracy": 71.43,
+    "stability": 0.0,
+    "composite_score": 4.66,
+    "train_time_s": 0.4,
+    "recommended": false,
+    "badges": [
+      "Fastest",
+      "Risky"
+    ]
   }
 ]

@@ -23,7 +23,7 @@ def main() -> None:
     args = parser.parse_args()
 
     exporter = WebDataExporter(root_dir=args.root_dir, output_dir=args.output_dir)
-    generated = exporter.export_all()
+    generated = exporter.export_all() + exporter.export_real_data()
     print(f"\nGenerated {len(generated)} web data files.")
 
 

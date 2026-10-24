@@ -1,7 +1,7 @@
 {
-  "executive_summary": "HoltWinters leads the exported leaderboard across 6 evaluated models with 1.52% MAPE.",
+  "executive_summary": "HoltWinters leads the exported leaderboard across 8 evaluated models with 1.52% MAPE.",
   "best_model_reason": "The recommended model has the highest composite ranking in the exported leaderboard.",
-  "risk_interpretation": "Drift monitoring indicates elevated model risk. Retraining should be prioritized.",
+  "risk_interpretation": "Average exported confidence is 67.6/100, indicating a Medium planning view.",
   "model_recommendations": [
     "Use HoltWinters as the default planning view until fresh pipeline outputs change the leaderboard.",
     "Review confidence scores by quarter before using forecasts for treasury decisions.",

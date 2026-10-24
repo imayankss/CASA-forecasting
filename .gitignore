@@ -30,3 +30,6 @@ web/npm-debug.log*
 .idea/
 .vscode/
 
+
+# Downloaded raw data (Santander rules forbid redistribution)
+data/external/

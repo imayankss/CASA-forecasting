@@ -62,6 +62,52 @@ class WebDataExporter:
     # Loaders
     # ------------------------------------------------------------------
 
+    def export_real_data(self) -> List[Path]:
+        """Export the real-data results (BOI series, FDIC panel, Santander) for the dashboard."""
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        payloads = {
+            "boi_real.json": self._boi_real_payload(),
+            "panel.json": self._panel_payload(),
+            "propensity.json": self._propensity_payload(),
+        }
+        written = []
+        for name, payload in payloads.items():
+            if payload:
+                self._write_json(name, payload)
+                written.append(self.output_dir / name)
+        return written
+
+    def _boi_real_payload(self) -> Dict[str, Any]:
+        series = self._read_csv("data/real/boi_casa_quarterly.csv")
+        board = self._read_csv("data/processed/boi_real/model_leaderboard.csv")
+        transfer = self._read_csv("reports/panel/boi_transfer_mape.csv")
+        if series.empty or board.empty:
+            return {}
+        board = board.rename(columns={board.columns[0]: "model"})
+        return {
+            "series": series[["quarter_end", "casa_cr", "casa_ratio_reported"]]
+                .astype(object).where(series[["quarter_end", "casa_cr", "casa_ratio_reported"]].notna(), None)
+                .to_dict("records"),
+            "leaderboard": board[["model", "MAPE", "MASE", "R2"]].sort_values("MASE").round(4).to_dict("records"),
+            "transfer_mape": transfer.rename(columns={transfer.columns[0]: "model"}).to_dict("records")
+                if not transfer.empty else [],
+            "forecasts": self._read_csv("reports/panel/boi_transfer_forecasts.csv").to_dict("records"),
+        }
+
+    def _panel_payload(self) -> Dict[str, Any]:
+        summary = self._read_json("reports/panel/summary.json")
+        if summary:
+            summary["mase_by_origin"] = self._read_csv("reports/panel/mase_by_origin.csv").to_dict("records")
+        return summary
+
+    def _propensity_payload(self) -> Dict[str, Any]:
+        metrics = self._read_json("reports/propensity/metrics.json")
+        if not metrics:
+            return {}
+        metrics.pop("run", None)
+        metrics["gains_new_adds"] = self._read_csv("reports/propensity/gains_lightgbm_new_adds.csv").to_dict("records")
+        return metrics
+
     def _load_deposits(self) -> pd.DataFrame:
         path = self.raw_dir / "boi_casa_deposits.csv"
         if not path.exists():

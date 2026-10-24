@@ -1,0 +1,8 @@
+,DM_stat,p_value,significant_5pct,n_test
+ARIMA,-2.863,0.0187,True,10
+SARIMA,-3.476,0.007,True,10
+SARIMAX,-3.476,0.007,True,10
+AutoARIMA,-2.896,0.0177,True,10
+HoltWinters,-3.501,0.0067,True,10
+Prophet,-2.471,0.0355,True,10
+Drift,-3.546,0.0063,True,10

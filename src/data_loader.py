@@ -48,11 +48,12 @@ _SCALE_COLS = EXOG_COLS
 # ── Internal helpers ───────────────────────────────────────────────────────────
 
 def _resolve_macro_path(deposit_path: Path) -> Optional[Path]:
-    candidates = [
-        deposit_path.parent / "macro_indicators.csv",
-        deposit_path.parents[1] / "raw" / "macro_indicators.csv",
-        Path("data/raw/macro_indicators.csv"),
-    ]
+    # Only fall back to data/raw for files that live there: the macro file is
+    # synthetic and must never be joined onto the real BOI series in data/real.
+    candidates = [deposit_path.parent / "macro_indicators.csv"]
+    if deposit_path.parent.name == "raw":
+        candidates += [deposit_path.parents[1] / "raw" / "macro_indicators.csv",
+                       Path("data/raw/macro_indicators.csv")]
     for p in candidates:
         if p.exists():
             return p
@@ -96,6 +97,11 @@ def load_casa_data(
     filepath = Path(filepath)
     df = pd.read_csv(filepath)
     df.columns = df.columns.str.strip()
+    if "quarter_end" in df.columns:          # real BOI series (data/real/boi_casa_quarterly.csv)
+        df = pd.DataFrame({
+            "Quarter_Year": pd.PeriodIndex(pd.to_datetime(df["quarter_end"]), freq="Q").astype(str),
+            "Deposit_Amount": df["casa_cr"],
+        })
 
     df = _parse_period_index(df)
     df["Deposit_Amount"] = pd.to_numeric(df["Deposit_Amount"], errors="coerce")

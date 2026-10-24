@@ -1,10 +1,10 @@
 {
-  "drift_detected": true,
-  "drift_type": "Mild",
-  "test_statistic": 0.9688,
-  "p_value": 0.0,
+  "drift_detected": false,
+  "drift_type": null,
+  "test_statistic": 0.2212,
+  "p_value": 0.8845,
   "cusum_signal": false,
   "residual_drift": false,
-  "model_health_score": 75,
-  "interpretation": "Drift detected. Schedule retraining before using the forecast operationally."
+  "model_health_score": 100,
+  "interpretation": "No drift detected in the exported monitoring artifact."
 }

@@ -96,3 +96,38 @@ class ModelRegistry:
             row.update({k: round(v, 4) for k, v in rec.metrics.items()})
             rows.append(row)
         return pd.DataFrame(rows).set_index("Model")
+
+
+def run_metadata(config: Dict, data_files: List[str]) -> Dict:
+    """Provenance for one run: config, input file sizes and hashes, git commit."""
+    import hashlib
+    import subprocess
+    from datetime import datetime
+    from pathlib import Path
+
+    def sha256(path: str) -> str:
+        h = hashlib.sha256()
+        with open(path, "rb") as f:
+            for chunk in iter(lambda: f.read(1 << 20), b""):
+                h.update(chunk)
+        return h.hexdigest()
+
+    def git(*args: str) -> str:
+        return subprocess.run(["git", *args], capture_output=True, text=True, check=True,
+                              cwd=Path(__file__).resolve().parents[2]).stdout.strip()
+
+    try:
+        git_sha = git("rev-parse", "HEAD")
+        # Uncommitted tracked changes mean git_sha is not the code that produced this run
+        git_dirty = bool(git("status", "--porcelain", "--untracked-files=no"))
+    except (OSError, subprocess.CalledProcessError):
+        git_sha, git_dirty = None, None
+    return {
+        "timestamp": datetime.now().isoformat(timespec="seconds"),
+        "git_sha": git_sha,
+        "git_dirty": git_dirty,
+        "config": config,
+        "data_snapshot": [
+            {"path": p, "bytes": Path(p).stat().st_size, "sha256": sha256(p)} for p in data_files
+        ],
+    }
